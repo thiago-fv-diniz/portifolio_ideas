@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BETS SPORTS GROUP — Entretenimento digital</title>
+<meta name="description" content="Grupo formado por casas de apostas esportivas e cassinos online. Desde 2022, operamos as marcas Vaidebet, Obabet, Betpix, Betpix365 e Pix365." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/SplitText.min.js"></script>
+
+<style>
+  :root{
+    --bg:#000;
+    --bg-elev:#0a0a0a;
+    --bg-elev-2:#111;
+    --border:#1a1a1a;
+    --border-strong:#2a2a2a;
+    --text:#ffffff;
+    --text-2:#aaaaaa;
+    --text-3:#666666;
+    --text-4:#3a3a3a;
+    --max:1240px;
+    --pad:32px;
+    --r:14px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text)}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ScrollSmoother required structure */
+  #smooth-wrapper{ position:fixed; overflow:hidden; width:100%; height:100%; top:0; left:0; right:0; bottom:0; }
+  #smooth-content{ overflow:visible; width:100%; }
+  ::selection{background:#fff;color:#000}
+  a{color:inherit;text-decoration:none}
+
+  /* Background grain & vignette */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.06), transparent 60%),
+      radial-gradient(900px 500px at 100% 100%, rgba(255,255,255,.025), transparent 60%);
+  }
+
+  /* Cursor-reveal grid — global checkered overlay revealed by the cursor */
+  .cursor-grid{
+    position:fixed; inset:0; pointer-events:none; z-index:2;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.16) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.16) 1px, transparent 1px);
+    background-size: 64px 64px;
+    background-position: center center;
+    opacity:0;
+    transition: opacity .35s ease;
+    --cx: 50%;
+    --cy: 50%;
+    --r: 260px;
+    -webkit-mask-image: radial-gradient(circle var(--r) at var(--cx) var(--cy), #000 0%, rgba(0,0,0,.6) 35%, rgba(0,0,0,0) 75%);
+            mask-image: radial-gradient(circle var(--r) at var(--cx) var(--cy), #000 0%, rgba(0,0,0,.6) 35%, rgba(0,0,0,0) 75%);
+  }
+  .cursor-grid.active{ opacity:1; }
+
+  /* Cursor dot — the visual anchor for the reveal */
+  .cursor-dot{
+    position:fixed; top:0; left:0; pointer-events:none; z-index:60;
+    width:6px; height:6px; border-radius:50%;
+    background:#fff;
+    transform: translate(-50%, -50%);
+    opacity:0;
+    transition: opacity .25s ease, width .25s ease, height .25s ease, background .25s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring{
+    position:fixed; top:0; left:0; pointer-events:none; z-index:60;
+    width:46px; height:46px; border-radius:50%;
+    border:1px solid rgba(255,255,255,.45);
+    transform: translate(-50%, -50%);
+    opacity:0;
+    transition: opacity .3s ease, width .3s ease, height .3s ease, border-color .3s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-active .cursor-dot,
+  .cursor-active .cursor-ring{ opacity:1; }
+  .cursor-active.cursor-hover .cursor-dot{ width:10px; height:10px; }
+  .cursor-active.cursor-hover .cursor-ring{ width:64px; height:64px; }
+
+  @media (hover: none){
+    .cursor-grid, .cursor-dot, .cursor-ring{ display:none !important; }
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:2;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity:.6;mix-blend-mode:overlay;
+  }
+
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+
+  /* NAVBAR */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    padding:18px 0;
+    transition:background .35s ease, border-color .35s ease, padding .35s ease, backdrop-filter .35s ease;
+    border-bottom:1px solid transparent;
+  }
+  .nav.scrolled{
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border-bottom-color:var(--border);
+    padding:12px 0;
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .logo{
+    font-weight:900;letter-spacing:.22em;font-size:13px;
+    display:flex;align-items:center;gap:12px;line-height:1;
+  }
+  .logo img{height:34px;width:auto;display:block}
+  .logo .stack{display:flex;flex-direction:column;gap:2px}
+  .logo .stack span{display:block}
+  .nav-links{display:flex;gap:34px;font-size:13px;color:var(--text-2)}
+  .nav-links a{position:relative;transition:color .25s ease}
+  .nav-links a:hover{color:#fff}
+  .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:#fff;transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
+  .nav-links a:hover::after{transform:scaleX(1)}
+  .nav-cta{
+    font-size:12px;font-weight:700;letter-spacing:.05em;
+    padding:10px 18px;border:1px solid var(--border-strong);border-radius:100px;
+    transition:background .25s, color .25s, border-color .25s;
+  }
+  .nav-cta:hover{background:#fff;color:#000;border-color:#fff}
+  .nav-burger{display:none;width:28px;height:18px;position:relative;cursor:pointer}
+  .nav-burger span{position:absolute;left:0;right:0;height:1px;background:#fff}
+  .nav-burger span:nth-child(1){top:2px}
+  .nav-burger span:nth-child(2){top:50%;transform:translateY(-50%)}
+  .nav-burger span:nth-child(3){bottom:2px}
+
+  /* HERO BG — fixed scenery (outside smooth-wrapper, stays put while content scrolls) */
+  .hero-bg{
+    position:fixed;inset:0;pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+  .hero-grid{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:80px 80px;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 35%, #000 0%, transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 35%, #000 0%, transparent 75%);
+    will-change:transform;
+  }
+  .hero-orb{
+    position:absolute;width:900px;height:900px;border-radius:50%;
+    background:radial-gradient(circle at center, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%);
+    top:-200px;left:50%;margin-left:-450px;
+    filter:blur(20px);
+    pointer-events:none;
+    will-change:transform;
+  }
+
+  /* HERO */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    padding:160px 0 100px;
+    display:flex;align-items:center;
+    overflow:visible;
+    z-index:3;
+    background:transparent;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-2);
+    padding:8px 16px;border:1px solid var(--border-strong);border-radius:100px;
+    background:rgba(255,255,255,.02);
+    margin-bottom:34px;
+  }
+  .eyebrow .pulse{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.5);animation:pulse 2s infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}
+    70%{box-shadow:0 0 0 10px rgba(255,255,255,0)}
+    100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}
+  }
+
+  .hero-title{
+    font-size: clamp(44px, 8vw, 116px);
+    font-weight:900;
+    line-height:.96;
+    letter-spacing:-.045em;
+    margin-bottom:32px;
+    max-width:14ch;
+  }
+  .hero-title .stroke{
+    -webkit-text-stroke:1px rgba(255,255,255,.85);
+    color:transparent;
+    font-style:italic;
+    font-weight:800;
+  }
+  .hero-title .line{display:block;overflow:hidden}
+  .hero-title .line-inner{display:inline-block;will-change:transform}
+
+  .hero-sub{
+    font-size:clamp(15px,1.3vw,19px);
+    color:var(--text-2);
+    max-width:560px;
+    margin-bottom:44px;
+    line-height:1.55;
+  }
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:80px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:16px 26px;
+    border-radius:100px;
+    font-size:14px;font-weight:700;letter-spacing:.02em;
+    transition:transform .25s var(--ease), background .25s, color .25s, border-color .25s;
+    cursor:pointer;border:1px solid transparent;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:#fff;color:#000}
+  .btn-primary:hover{background:#f0f0f0}
+  .btn-ghost{color:#fff;border-color:var(--border-strong);background:rgba(255,255,255,.02)}
+  .btn-ghost:hover{border-color:#fff}
+  .btn .arrow{
+    display:inline-flex;width:18px;height:18px;border-radius:50%;
+    align-items:center;justify-content:center;
+    background:#000;color:#fff;font-size:11px;
+    transition:transform .3s var(--ease);
+  }
+  .btn-primary .arrow{background:#000;color:#fff}
+  .btn-ghost .arrow{background:#fff;color:#000}
+  .btn:hover .arrow{transform:translateX(3px)}
+
+  .hero-meta{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:40px;
+    padding-top:36px;border-top:1px solid var(--border);
+    max-width:880px;
+  }
+  .hero-meta .item{display:flex;flex-direction:column;gap:6px}
+  .hero-meta .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)}
+  .hero-meta .v{font-size:18px;font-weight:700;color:#fff}
+
+  /* Marquee */
+  .marquee{
+    position:relative;z-index:3;
+    padding:38px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+    overflow:hidden;
+    background:#050505;
+  }
+  .marquee-track{
+    display:flex;gap:80px;width:max-content;
+    animation:scroll 30s linear infinite;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-3);
+  }
+  .marquee-track span{display:inline-flex;align-items:center;gap:80px}
+  .marquee-track span::after{content:"●";color:var(--text-4);font-size:10px}
+  @keyframes scroll{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+  }
+
+  /* SECTION */
+  .section{position:relative;z-index:3;padding:140px 0;border-bottom:1px solid var(--border)}
+  .section-head{
+    display:grid;grid-template-columns:1fr 1.4fr;gap:80px;align-items:end;
+    margin-bottom:80px;
+  }
+  .section-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-3);
+    margin-bottom:16px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .section-label::before{content:"";width:24px;height:1px;background:var(--text-3)}
+  .section-title{
+    font-size:clamp(34px,4.2vw,64px);font-weight:800;letter-spacing:-.03em;line-height:1;
+  }
+  .section-title em{font-style:italic;font-weight:400;color:var(--text-2)}
+  .section-lead{font-size:17px;color:var(--text-2);max-width:520px;line-height:1.6}
+
+  /* BRANDS */
+  .brands{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .brand-card{
+    position:relative;
+    background:var(--bg-elev);
+    border:1px solid var(--border);
+    border-radius:var(--r);
+    padding:28px 22px 24px;
+    min-height:340px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    overflow:hidden;
+    transition:border-color .35s, transform .4s var(--ease), background .35s;
+  }
+  .brand-card::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(400px 200px at var(--mx,50%) var(--my,0%), rgba(255,255,255,.08), transparent 60%);
+    opacity:0;transition:opacity .4s;
+    pointer-events:none;
+  }
+  .brand-card:hover{border-color:var(--border-strong);background:#0d0d0d;transform:translateY(-4px)}
+  .brand-card:hover::before{opacity:1}
+  .brand-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .brand-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3);letter-spacing:.18em}
+  .brand-status{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    padding:4px 10px;border:1px solid var(--border-strong);border-radius:100px;color:var(--text-2);
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .brand-status .led{width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 2.4s infinite}
+  .brand-status.soon{color:var(--text-3)}
+  .brand-status.soon .led{background:var(--text-3);animation:none}
+  .brand-logo{
+    margin-top:28px;
+    display:flex;align-items:center;justify-content:flex-start;
+    min-height:64px;
+  }
+  .brand-logo img{
+    max-width:100%;max-height:48px;width:auto;height:auto;display:block;
+    filter:brightness(0) invert(1);
+    opacity:.95;
+    transition:opacity .3s ease, filter .3s ease;
+  }
+  .brand-card:hover .brand-logo img{opacity:1}
+  .brand-meta{margin-top:18px;display:flex;flex-direction:column;gap:14px}
+  .brand-url{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3)}
+  .brand-tag{font-size:13px;color:var(--text-2);line-height:1.5}
+  .brand-arrow{
+    width:36px;height:36px;border-radius:50%;
+    border:1px solid var(--border-strong);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;color:#fff;
+    transition:background .25s, color .25s, transform .25s;
+    align-self:flex-end;
+  }
+  .brand-card:hover .brand-arrow{background:#fff;color:#000;transform:rotate(-45deg)}
+
+  /* PILLARS */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .pillar{
+    padding:48px 36px 48px 0;
+    border-left:1px solid var(--border);
+    padding-left:36px;
+    position:relative;
+    min-height:380px;
+    display:flex;flex-direction:column;
+  }
+  .pillar:first-child{border-left:none;padding-left:0}
+  .pillar-icon{
+    width:56px;height:56px;border-radius:14px;
+    border:1px solid var(--border-strong);background:var(--bg-elev);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:32px;
+  }
+  .pillar-icon svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:1.5}
+  .pillar-num{
+    position:absolute;top:0;right:24px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-4);letter-spacing:.18em;
+  }
+  .pillar h3{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:14px;line-height:1.1}
+  .pillar p{font-size:15px;color:var(--text-2);line-height:1.65;margin-bottom:28px;flex:1}
+  .pillar ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .pillar li{font-size:13px;color:var(--text-2);display:flex;align-items:baseline;gap:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+  .pillar li::before{content:"";width:4px;height:4px;background:#fff;border-radius:50%;flex-shrink:0;transform:translateY(-2px)}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--border)}
+  .stat{
+    padding:56px 32px;border-left:1px solid var(--border);
+    position:relative;
+  }
+  .stat:first-child{border-left:none;padding-left:0}
+  .stat-num{
+    font-size:clamp(56px,7vw,96px);
+    font-weight:900;letter-spacing:-.04em;line-height:1;
+    margin-bottom:18px;
+    display:flex;align-items:baseline;gap:4px;
+  }
+  .stat-num .suffix{font-size:.4em;color:var(--text-2);font-weight:600;letter-spacing:0}
+  .stat-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);
+    line-height:1.5;
+  }
+  .stat-bar{
+    position:absolute;left:32px;right:32px;bottom:32px;height:1px;background:var(--border);
+    overflow:hidden;
+  }
+  .stat:first-child .stat-bar{left:0}
+  .stat-bar::after{
+    content:"";display:block;height:100%;width:100%;background:#fff;
+    transform:scaleX(0);transform-origin:left;
+  }
+
+  /* COMPLIANCE STRIP */
+  .compliance{
+    padding:90px 0;border-bottom:1px solid var(--border);
+    position:relative;z-index:3;
+    background:linear-gradient(180deg,#000 0%,#040404 100%);
+  }
+  .compliance-grid{
+    display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center;
+  }
+  .compliance h2{
+    font-size:clamp(28px,3.2vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-bottom:20px;
+  }
+  .compliance p{font-size:16px;color:var(--text-2);line-height:1.65;max-width:520px}
+  .compliance-card{
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+    padding:36px;
+    display:grid;grid-template-columns:1fr 1fr;gap:24px;
+  }
+  .compliance-card .row{display:flex;flex-direction:column;gap:6px}
+  .compliance-card .row .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)}
+  .compliance-card .row .v{font-size:15px;color:#fff;font-weight:600}
+  .compliance-card .full{grid-column:1/-1;padding-top:18px;border-top:1px solid var(--border)}
+
+  /* CONTACT */
+  .contact{
+    padding:140px 0 100px;
+    position:relative;z-index:3;
+    text-align:center;
+    overflow:hidden;
+  }
+  .contact-bg{
+    position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(700px 400px at 50% 30%, rgba(255,255,255,.07), transparent 60%);
+  }
+  .contact h2{
+    position:relative;
+    font-size:clamp(48px,8vw,128px);font-weight:900;letter-spacing:-.045em;line-height:.95;
+    margin-bottom:34px;
+  }
+  .contact h2 em{font-style:italic;font-weight:300;color:var(--text-2)}
+  .contact p{font-size:17px;color:var(--text-2);max-width:560px;margin:0 auto 44px;line-height:1.6}
+  .contact .actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:80px}
+  .contact-info{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+    border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+    max-width:980px;margin:0 auto;text-align:left;
+  }
+  .contact-info .ci{
+    padding:32px;border-left:1px solid var(--border);
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .contact-info .ci:first-child{border-left:none}
+  .contact-info .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)}
+  .contact-info .v{font-size:14px;color:#fff;line-height:1.5}
+
+  /* FOOTER */
+  .footer{
+    position:relative;z-index:3;
+    padding:36px 0;
+    background:#000;
+    border-top:1px solid var(--border);
+  }
+  .footer-inner{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:48px;
+  }
+  .footer .logo{
+    font-size:11px;letter-spacing:.22em;
+    gap:14px;
+  }
+  .footer .logo img{height:64px;width:auto}
+  .footer .logo .stack{gap:3px;color:var(--text-2)}
+  .footer-copy{
+    font-family:'Inter',sans-serif;
+    font-size:13px;color:#fff;line-height:1.55;
+    max-width:560px;
+  }
+  .footer-copy strong{font-weight:600}
+  .social{display:flex;gap:10px}
+  .social a{
+    width:38px;height:38px;border-radius:8px;
+    background:#1a1a1a;
+    display:flex;align-items:center;justify-content:center;color:var(--text-2);
+    transition:background .25s, transform .25s var(--ease);
+  }
+  .social a:hover{background:#2a2a2a;transform:translateY(-2px)}
+  .social img{width:18px;height:18px;filter:brightness(0) invert(1);opacity:.85;transition:opacity .25s}
+  .social a:hover img{opacity:1}
+
+  /* Reveal helper (initial states) */
+  .reveal{opacity:0;transform:translateY(40px)}
+  .reveal-x{opacity:0;transform:translateX(-30px)}
+
+  /* Responsive */
+  @media (max-width: 960px){
+    .nav-links{display:none}
+    .nav-burger{display:block}
+    .hero{padding:130px 0 80px;min-height:auto}
+    .hero-meta{grid-template-columns:repeat(2,1fr);gap:24px}
+    .section{padding:90px 0}
+    .section-head{grid-template-columns:1fr;gap:24px;margin-bottom:48px}
+    .brands{grid-template-columns:repeat(2,1fr);gap:10px}
+    .pillars{grid-template-columns:1fr}
+    .pillar{border-left:none;border-top:1px solid var(--border);padding:36px 0}
+    .pillar:first-child{border-top:none}
+    .stats{grid-template-columns:1fr 1fr}
+    .stat{border-left:none;padding:36px 24px;border-top:1px solid var(--border)}
+    .stat:nth-child(2){border-left:1px solid var(--border)}
+    .stat:nth-child(4){border-left:1px solid var(--border)}
+    .stat:first-child{border-top:none}
+    .stat:nth-child(2){border-top:none}
+    .compliance-grid{grid-template-columns:1fr;gap:40px}
+    .contact-info{grid-template-columns:1fr}
+    .contact-info .ci{border-left:none;border-top:1px solid var(--border)}
+    .contact-info .ci:first-child{border-top:none}
+    .footer-inner{grid-template-columns:1fr;text-align:center;gap:28px;justify-items:center}
+    .footer-copy{font-size:12px}
+    .footer .logo img{height:56px}
+  }
+  @media (max-width: 540px){
+    .brands{grid-template-columns:1fr}
+    .hero-meta{grid-template-columns:1fr 1fr;gap:18px}
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero background scenery — fixed, outside smooth-wrapper so it stays put -->
+<div class="hero-bg" aria-hidden="true">
+  <div class="hero-grid"></div>
+  <div class="hero-orb"></div>
+</div>
+
+<!-- Cursor-reveal grid + custom cursor -->
+<div class="cursor-grid" id="cursorGrid" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+<div id="smooth-wrapper">
+<div id="smooth-content">
+
+<!-- ===== NAVBAR ===== -->
+<nav class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#sobre" class="logo">
+      <img src="./assets/bpx-logo.svg" alt="BPX logo" />
+      <span class="stack"><span>BETS</span><span>SPORTS</span><span>GROUP</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#sobre">Sobre</a>
+      <a href="#marcas">Marcas</a>
+      <a href="#missao">Missão</a>
+      <a href="#grupo">Grupo</a>
+      <a href="#contato">Contato</a>
+    </div>
+    <a href="#contato" class="nav-cta">Fale com o grupo</a>
+    <div class="nav-burger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="sobre">
+  <div class="wrap" style="position:relative">
+    <div class="eyebrow" data-speed="1.05"><span class="pulse"></span>BETS SPORTS GROUP · DESDE 2022</div>
+    <h1 class="hero-title" id="heroTitle" data-speed="0.7">
+      <span class="line"><span class="line-inner">Apostas esportivas</span></span>
+      <span class="line"><span class="line-inner">&amp; <span class="stroke">cassino</span></span></span>
+      <span class="line"><span class="line-inner">online.</span></span>
+    </h1>
+    <p class="hero-sub reveal" data-speed="0.9">
+      Bem-vindo à BETS SPORTS GROUP, um grupo formado por casas de apostas esportivas
+      e cassinos online. Desde 2022, oferecemos as melhores experiências de apostas e
+      entretenimento digital através das marcas Vaidebet, Obabet, Betpix, Betpix365 e Pix365.
+    </p>
+    <div class="hero-actions reveal">
+      <a href="#marcas" class="btn btn-primary">Conheça nossas marcas <span class="arrow">→</span></a>
+      <a href="#missao" class="btn btn-ghost">Nossa missão <span class="arrow">→</span></a>
+    </div>
+
+    <div class="hero-meta">
+      <div class="item"><span class="k">Marcas</span><span class="v">5 marcas</span></div>
+      <div class="item"><span class="k">Fundação</span><span class="v">2022</span></div>
+      <div class="item"><span class="k">Setor</span><span class="v">Apostas &amp; Cassino</span></div>
+      <div class="item"><span class="k">Sede</span><span class="v">Campina Grande, PB</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Vaidebet</span><span>Obabet</span><span>Betpix</span><span>Betpix365</span><span>Pix365</span>
+    <span>Bets Sports Group</span><span>Apostas esportivas</span><span>Cassino online</span><span>Desde 2022</span>
+    <span>Vaidebet</span><span>Obabet</span><span>Betpix</span><span>Betpix365</span><span>Pix365</span>
+    <span>Bets Sports Group</span><span>Apostas esportivas</span><span>Cassino online</span><span>Desde 2022</span>
+  </div>
+</div>
+
+<!-- ===== MARCAS ===== -->
+<section class="section" id="marcas">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-label">02 — Nossas marcas</div>
+        <h2 class="section-title">Cinco marcas.<br><em>Um só grupo.</em></h2>
+      </div>
+      <p class="section-lead">
+        Operamos casas de apostas esportivas e cassinos online —
+        cada marca com identidade própria, mas todas sob os mesmos padrões
+        operacionais do grupo BETS SPORTS GROUP.
+      </p>
+    </div>
+
+    <div class="brands scroll-reveal" id="brandsGrid">
+      <a href="#" class="brand-card" aria-label="Vaidebet">
+        <div class="brand-top">
+          <span class="brand-num">B/01</span>
+          <span class="brand-status"><span class="led"></span>Apostas esportivas</span>
+        </div>
+        <div>
+          <div class="brand-logo"><img src="./assets/vaidebet.svg" alt="Vaidebet" /></div>
+          <div class="brand-meta">
+            <span class="brand-tag">Apostas esportivas. Marca de maior alcance do grupo.</span>
+          </div>
+        </div>
+        <span class="brand-arrow">↗</span>
+      </a>
+
+      <a href="#" class="brand-card" aria-label="Obabet">
+        <div class="brand-top">
+          <span class="brand-num">B/02</span>
+          <span class="brand-status"><span class="led"></span>Apostas + Cassino</span>
+        </div>
+        <div>
+          <div class="brand-logo"><img src="./assets/obabet.svg" alt="Obabet" /></div>
+          <div class="brand-meta">
+            <span class="brand-tag">Apostas esportivas e cassino online com foco em atendimento.</span>
+          </div>
+        </div>
+        <span class="brand-arrow">↗</span>
+      </a>
+
+      <a href="#" class="brand-card" aria-label="Betpix">
+        <div class="brand-top">
+          <span class="brand-num">B/03</span>
+          <span class="brand-status"><span class="led"></span>Apostas + Cassino</span>
+        </div>
+        <div>
+          <div class="brand-logo"><img src="./assets/betpix.svg" alt="Betpix" /></div>
+          <div class="brand-meta">
+            <span class="brand-tag">Casa de apostas e cassino online com experiência mobile-first.</span>
+          </div>
+        </div>
+        <span class="brand-arrow">↗</span>
+      </a>
+
+      <a href="#" class="brand-card" aria-label="Betpix365">
+        <div class="brand-top">
+          <span class="brand-num">B/04</span>
+          <span class="brand-status"><span class="led"></span>Apostas + Cassino</span>
+        </div>
+        <div>
+          <div class="brand-logo"><img src="./assets/betpix365.svg" alt="Betpix365" /></div>
+          <div class="brand-meta">
+            <span class="brand-tag">Apostas esportivas e cassino online com Pix instantâneo.</span>
+          </div>
+        </div>
+        <span class="brand-arrow">↗</span>
+      </a>
+
+      <a href="#" class="brand-card" aria-label="Pix365">
+        <div class="brand-top">
+          <span class="brand-num">B/05</span>
+          <span class="brand-status"><span class="led"></span>Cassino online</span>
+        </div>
+        <div>
+          <div class="brand-logo"><img src="./assets/pix365.svg" alt="Pix365" /></div>
+          <div class="brand-meta">
+            <span class="brand-tag">Cassino online com foco em jogadas rápidas e Pix.</span>
+          </div>
+        </div>
+        <span class="brand-arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MISSÃO ===== -->
+<section class="section" id="missao">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-label">03 — Nossa missão</div>
+        <h2 class="section-title">Entretenimento<br><em>de alta qualidade.</em></h2>
+      </div>
+      <p class="section-lead">
+        Proporcionar entretenimento de alta qualidade nos setores de artes, cultura,
+        esporte e recreação. Com uma equipe dedicada e apaixonada, buscamos constantemente
+        inovar e melhorar nossos serviços para garantir a satisfação e a segurança dos nossos usuários.
+      </p>
+    </div>
+
+    <div class="pillars scroll-reveal">
+      <div class="pillar">
+        <span class="pillar-num">M/01</span>
+        <div class="pillar-icon">
+          <!-- sparkle -->
+          <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.2 1.3 6.1L12 16.7l-5.4 2.8 1.3-6.1-4.6-4.2 6.1-.6L12 3z"/></svg>
+        </div>
+        <h3>Entretenimento</h3>
+        <p>Experiências de apostas esportivas e cassino online pensadas para artes, cultura, esporte e recreação — com alta qualidade em cada uma das nossas marcas.</p>
+        <ul>
+          <li>Apostas esportivas</li>
+          <li>Cassino online</li>
+          <li>5 marcas no portfólio</li>
+        </ul>
+      </div>
+
+      <div class="pillar">
+        <span class="pillar-num">M/02</span>
+        <div class="pillar-icon">
+          <!-- people -->
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M14 20c0-2 2-4 4-4s3 1.4 3 4"/></svg>
+        </div>
+        <h3>Equipe</h3>
+        <p>Uma equipe dedicada e apaixonada, que busca constantemente inovar e melhorar nossos serviços — refletido em cada decisão operacional e técnica do grupo.</p>
+        <ul>
+          <li>Inovação contínua</li>
+          <li>Operação dedicada</li>
+          <li>Foco no jogador</li>
+        </ul>
+      </div>
+
+      <div class="pillar">
+        <span class="pillar-num">M/03</span>
+        <div class="pillar-icon">
+          <!-- lock -->
+          <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.2" fill="#fff"/></svg>
+        </div>
+        <h3>Segurança</h3>
+        <p>Garantir a satisfação e a segurança dos nossos usuários é prioridade — infraestrutura, atendimento e operação financeira pensadas para proteger quem joga conosco.</p>
+        <ul>
+          <li>Satisfação do usuário</li>
+          <li>Segurança operacional</li>
+          <li>Confiança em primeiro lugar</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== O GRUPO ===== -->
+<section class="section" id="grupo">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-label">04 — O grupo</div>
+        <h2 class="section-title">Solidez<br><em>em escala nacional.</em></h2>
+      </div>
+      <p class="section-lead">
+        O grupo BETS SPORTS GROUP reúne casas de apostas esportivas e cassinos online,
+        operando cinco marcas independentes a partir de Campina Grande, Paraíba.
+      </p>
+    </div>
+
+    <div class="stats scroll-reveal">
+      <div class="stat">
+        <div class="stat-num"><span class="counter" data-target="5">0</span></div>
+        <div class="stat-label">Marcas<br>no portfólio</div>
+        <div class="stat-bar"></div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="counter" data-target="2022">0</span></div>
+        <div class="stat-label">Ano de<br>fundação</div>
+        <div class="stat-bar"></div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="counter" data-target="2">0</span></div>
+        <div class="stat-label">Verticais<br>apostas &amp; cassino</div>
+        <div class="stat-bar"></div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="counter" data-target="1">0</span></div>
+        <div class="stat-label">Sede<br>Campina Grande / PB</div>
+        <div class="stat-bar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DADOS DO GRUPO ===== -->
+<section class="compliance" id="dados">
+  <div class="wrap">
+    <div class="compliance-grid">
+      <div>
+        <div class="section-label">05 — Dados do grupo</div>
+        <h2>Operação a partir<br>da Paraíba.</h2>
+        <p>
+          BETS SPORTS GROUP é o grupo por trás das marcas Vaidebet, Obabet, Betpix,
+          Betpix365 e Pix365. Atuamos no segmento de apostas esportivas e cassinos
+          online desde 2022, com sede em Campina Grande.
+        </p>
+      </div>
+
+      <div class="compliance-card scroll-reveal">
+        <div class="row"><span class="k">Razão social</span><span class="v">Bets Sports Group</span></div>
+        <div class="row"><span class="k">CNPJ</span><span class="v">55.590.815/0001-60</span></div>
+        <div class="row"><span class="k">Fundação</span><span class="v">2022</span></div>
+        <div class="row"><span class="k">Setor</span><span class="v">Apostas esportivas &amp; cassino</span></div>
+        <div class="row full"><span class="k">Endereço da sede</span><span class="v">Rua Vidal de Negreiros, 231<br>Campina Grande / PB</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTATO ===== -->
+<section class="contact" id="contato">
+  <div class="contact-bg"></div>
+  <div class="wrap">
+    <h2>Vamos <em>conversar.</em></h2>
+    <p>
+      Imprensa, parcerias ou qualquer assunto institucional — fale diretamente
+      com o time responsável pelo grupo.
+    </p>
+    <div class="actions">
+      <a href="mailto:contato@bpxgroup.io" class="btn btn-primary">contato@bpxgroup.io <span class="arrow">→</span></a>
+      <a href="#grupo" class="btn btn-ghost">Sobre o grupo <span class="arrow">→</span></a>
+    </div>
+
+    <div class="contact-info">
+      <div class="ci">
+        <span class="k">Sede</span>
+        <span class="v">Rua Vidal de Negreiros, 231<br>Campina Grande / PB</span>
+      </div>
+      <div class="ci">
+        <span class="k">Grupo</span>
+        <span class="v">Bets Sports Group<br>CNPJ 55.590.815/0001-60</span>
+      </div>
+      <div class="ci">
+        <span class="k">Contato</span>
+        <span class="v">contato@bpxgroup.io</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <a href="#sobre" class="logo">
+        <img src="./assets/bpx-logo.svg" alt="BPX logo" />
+        <span class="stack"><span>BETS</span><span>SPORTS</span><span>GROUP</span></span>
+      </a>
+
+      <p class="footer-copy">
+        © 2025 <strong>BETS SPORTS GROUP</strong>. Todos os direitos reservados.<br>
+        Nossas marcas: VAIDEBET | OBABET | BETPIX365.<br>
+        CNPJ 55.590.815/0001-60 | Endereço: Rua Vidal de Negreiros, 231
+      </p>
+
+      <div class="social">
+        <a href="/" aria-label="LinkedIn"><img src="./assets/linkedin.svg" alt="LinkedIn" /></a>
+        <a href="/" aria-label="Repositório"><img src="./assets/repo.svg" alt="Repositório" /></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /#smooth-content -->
+</div><!-- /#smooth-wrapper -->
+
+<script>
+  // ============ GSAP ============
+  const nav = document.getElementById('nav');
+
+  if (window.gsap && window.ScrollTrigger) {
+    const plugins = [ScrollTrigger];
+    if (window.ScrollSmoother) plugins.push(ScrollSmoother);
+    if (window.SplitText) plugins.push(SplitText);
+    gsap.registerPlugin.apply(gsap, plugins);
+
+    // ---- ScrollSmoother global ----
+    let smoother = null;
+    if (window.ScrollSmoother) {
+      smoother = ScrollSmoother.create({
+        wrapper: '#smooth-wrapper',
+        content: '#smooth-content',
+        smooth: 1.5,
+        normalizeScroll: true,
+        effects: true,
+        smoothTouch: 0.1
+      });
+    }
+
+    // ---- Anchor links → smoother.scrollTo (so nav clicks scroll within the page) ----
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        if (!href || href === '#' || href.length < 2) return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+        if (smoother) {
+          smoother.scrollTo(target, true, 'top 80px');
+        } else {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        history.pushState(null, '', href);
+      });
+    });
+
+    // ---- Nav scrolled state (driven by ScrollSmoother / window) ----
+    const onScroll = () => {
+      const y = smoother ? smoother.scrollTop() : window.scrollY;
+      nav.classList.toggle('scrolled', y > 60);
+    };
+    if (smoother) {
+      ScrollTrigger.create({
+        start: 0, end: 'max',
+        onUpdate: onScroll
+      });
+    } else {
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
+    onScroll();
+
+    // ---- HERO title reveal with SplitText ----
+    if (window.SplitText) {
+      // Hide the line-mask trick — use SplitText chars instead
+      document.querySelectorAll('.hero-title .line-inner').forEach(el => el.style.transform = 'none');
+      document.querySelectorAll('.hero-title .line').forEach(el => el.style.overflow = 'visible');
+
+      const heroSplit = new SplitText('.hero-title', { type: 'chars, words, lines', linesClass: 'st-line' });
+      gsap.from(heroSplit.chars, {
+        opacity: 0,
+        y: 60,
+        rotateX: -50,
+        stagger: 0.018,
+        duration: 1,
+        ease: 'power3.out',
+        delay: 0.25
+      });
+    } else {
+      // Fallback: lines mask reveal
+      gsap.set('.hero-title .line-inner', { yPercent: 110 });
+      gsap.to('.hero-title .line-inner', {
+        yPercent: 0, duration: 1.1, ease: 'power4.out', stagger: 0.12, delay: 0.15
+      });
+    }
+
+    // ---- Section titles with SplitText (chars, back.out) ----
+    if (window.SplitText) {
+      gsap.utils.toArray('.section-title').forEach(title => {
+        const split = new SplitText(title, { type: 'chars, words' });
+        gsap.from(split.chars, {
+          opacity: 0,
+          y: 60,
+          rotateX: -60,
+          stagger: 0.02,
+          duration: 0.8,
+          ease: 'back.out(1.7)',
+          scrollTrigger: { trigger: title, start: 'top 80%' }
+        });
+      });
+    }
+
+    // ---- Contact heading SplitText ----
+    if (window.SplitText) {
+      const contactSplit = new SplitText('.contact h2', { type: 'chars, words' });
+      gsap.from(contactSplit.chars, {
+        opacity: 0, y: 60, rotateX: -40, stagger: 0.02, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: '.contact', start: 'top 75%' }
+      });
+    }
+
+    // HERO sub + CTAs
+    gsap.utils.toArray('.hero .reveal').forEach((el, i) => {
+      gsap.fromTo(el,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.6 + i * 0.12 }
+      );
+    });
+
+    // HERO meta
+    gsap.fromTo('.hero-meta .item',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.08, delay: 1.05 }
+    );
+
+    // Section heads (label + lead — title handled by SplitText above)
+    gsap.utils.toArray('.section-head').forEach((el) => {
+      gsap.fromTo(el.querySelectorAll('.section-label, .section-lead'),
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1,
+          scrollTrigger: { trigger: el, start: 'top 80%' }
+        }
+      );
+    });
+
+    // Brand cards — scale 1.1 + blur(10px) + opacity 0, stagger 0.15
+    gsap.fromTo('.brand-card',
+      { opacity: 0, scale: 1.1, filter: 'blur(10px)' },
+      {
+        opacity: 1, scale: 1, filter: 'blur(0px)',
+        duration: 1, ease: 'power3.out', stagger: 0.15,
+        scrollTrigger: { trigger: '#brandsGrid', start: 'top 78%' }
+      }
+    );
+
+    // Pillars — alternating slide from left / right
+    gsap.utils.toArray('.pillar').forEach((p, i) => {
+      const fromX = i % 2 === 0 ? -120 : 120;
+      gsap.fromTo(p,
+        { opacity: 0, x: fromX },
+        {
+          opacity: 1, x: 0, duration: 1.1, ease: 'power3.out',
+          scrollTrigger: { trigger: p, start: 'top 85%' }
+        }
+      );
+    });
+
+    // Section clip-path reveal with scrub (inset 0 0 100% 0 → 0 0 0% 0)
+    gsap.utils.toArray('.scroll-reveal').forEach(el => {
+      gsap.fromTo(el,
+        { clipPath: 'inset(0 0 100% 0)' },
+        {
+          clipPath: 'inset(0 0 0% 0)',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 90%',
+            end: 'top 50%',
+            scrub: true
+          }
+        }
+      );
+    });
+
+    // Stats counter
+    gsap.utils.toArray('.stat').forEach((stat, i) => {
+      const num = stat.querySelector('.counter');
+      const bar = stat.querySelector('.stat-bar');
+      const target = parseFloat(num.dataset.target);
+      ScrollTrigger.create({
+        trigger: stat,
+        start: 'top 80%',
+        once: true,
+        onEnter: () => {
+          gsap.fromTo(num, { innerText: 0 }, {
+            innerText: target,
+            duration: 1.8,
+            ease: 'power2.out',
+            snap: { innerText: target % 1 === 0 ? 1 : 0.1 },
+            onUpdate: function () {
+              num.innerText = Math.floor(parseFloat(num.innerText));
+            }
+          });
+          gsap.fromTo(stat, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+          gsap.to(bar, { '--w': '100%', duration: 1.2, ease: 'power2.out', delay: 0.2,
+            onStart: () => bar.style.setProperty('--w', '0%'),
+            onUpdate: function () {
+              const p = this.progress();
+              bar.querySelector ? null : null;
+            }
+          });
+          // animate the ::after pseudo via class
+          requestAnimationFrame(() => {
+            bar.animate(
+              [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }],
+              { duration: 1200, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' }
+            );
+          });
+        }
+      });
+    });
+
+    // Compliance card reveal
+    gsap.fromTo('.compliance-card',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: '.compliance', start: 'top 75%' }
+      }
+    );
+
+    // Contact body
+    gsap.fromTo('.contact p, .contact .actions, .contact-info',
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.1,
+        scrollTrigger: { trigger: '.contact', start: 'top 70%' }
+      }
+    );
+  }
+
+  // ============ Brand card hover light follow ============
+  document.querySelectorAll('.brand-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      card.style.setProperty('--mx', x + '%');
+      card.style.setProperty('--my', y + '%');
+    });
+  });
+
+  // ============ Cursor-reveal grid + custom cursor ============
+  (() => {
+    const grid = document.getElementById('cursorGrid');
+    const dot  = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (!grid || !dot || !ring) return;
+
+    // Smooth-follow with gsap.quickTo (independent speeds for nice trailing)
+    const setDotX  = gsap.quickTo(dot,  'x', { duration: 0.15, ease: 'power3.out' });
+    const setDotY  = gsap.quickTo(dot,  'y', { duration: 0.15, ease: 'power3.out' });
+    const setRingX = gsap.quickTo(ring, 'x', { duration: 0.45, ease: 'power3.out' });
+    const setRingY = gsap.quickTo(ring, 'y', { duration: 0.45, ease: 'power3.out' });
+
+    let active = false;
+    const activate = () => {
+      if (active) return;
+      active = true;
+      document.body.classList.add('cursor-active');
+      grid.classList.add('active');
+    };
+    const deactivate = () => {
+      active = false;
+      document.body.classList.remove('cursor-active');
+      grid.classList.remove('active');
+    };
+
+    window.addEventListener('mousemove', (e) => {
+      activate();
+      setDotX(e.clientX);   setDotY(e.clientY);
+      setRingX(e.clientX);  setRingY(e.clientY);
+      // Mask uses px so it follows precisely regardless of viewport size
+      grid.style.setProperty('--cx', e.clientX + 'px');
+      grid.style.setProperty('--cy', e.clientY + 'px');
+    }, { passive: true });
+
+    window.addEventListener('mouseleave', deactivate);
+    window.addEventListener('blur', deactivate);
+
+    // Pulse the reveal radius on click for a satisfying feel
+    window.addEventListener('mousedown', () => {
+      gsap.fromTo(grid, { '--r': '260px' }, { '--r': '420px', duration: 0.25, ease: 'power2.out',
+        onComplete: () => gsap.to(grid, { '--r': '260px', duration: 0.6, ease: 'power3.out' })
+      });
+    });
+
+    // Hover state on interactive elements — ring grows
+    const hoverables = document.querySelectorAll('a, button, .btn, .brand-card, .nav-cta, .social a, [role="button"]');
+    hoverables.forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+  })();
+
+  // ============ Hero parallax on mousemove (Observer-style) ============
+  const orb = document.querySelector('.hero-orb');
+  const grid = document.querySelector('.hero-grid');
+  if (orb && grid) {
+    const heroEl = document.querySelector('.hero');
+    heroEl.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5);
+      const y = (e.clientY / window.innerHeight - 0.5);
+      gsap.to(orb, { x: x * 40, y: y * 30, duration: 1.2, ease: 'power3.out', overwrite: 'auto' });
+      gsap.to(grid, { x: x * -14, y: y * -14, duration: 1.2, ease: 'power3.out', overwrite: 'auto' });
+    });
+  }
+</script>
+
+</body>
+</html>

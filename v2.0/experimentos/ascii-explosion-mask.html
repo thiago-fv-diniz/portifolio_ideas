@@ -1,0 +1,294 @@
+<!-- ASCII Explosion + Text-Exclusion Mask
+     Demonstrates how to make the typewriter explosion "contornar" (contour)
+     the logo + text instead of running underneath it.
+
+     The only addition vs. the original initAsciiExplosion effect is the MASK:
+     a per-cell test that zeroes out fieldShape inside the logo/text region.
+     Two strategies are shown — switch with the toggle:
+       - "box"   : padded rounded-rect around the lockup  (simplest, robust, matches the reference)
+       - "glyph" : true pixel contour hugging the letterforms (fancier)
+       - "off"   : original behaviour (explosion runs under the text)
+-->
+<style>
+  :root {
+    --bg: #f8f8f8;
+    --ink: #1b1b1b;
+    --fire: #ec562a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #ececec; }
+
+  .controls {
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+    padding: 12px 16px; background: #fff; border-bottom: 1px solid #e2e2e2;
+    font-size: 13px; color: #333;
+  }
+  .controls label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+  .controls .seg { display: inline-flex; border: 1px solid #d4d4d4; border-radius: 8px; overflow: hidden; }
+  .controls .seg button {
+    border: 0; background: #fff; padding: 6px 12px; cursor: pointer; font-size: 13px; color: #555;
+  }
+  .controls .seg button.active { background: var(--fire); color: #fff; }
+  .controls input[type=range] { width: 120px; }
+
+  /* The container that holds the animation, exactly like in your app. */
+  .fc-decoration-wrap {
+    position: relative;
+    width: 100%;
+    height: 340px;
+    background: var(--bg);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+  /* Canvas sits behind. */
+  .fc-decoration {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  /* Foreground lockup sits ON TOP (z-index >= 1). The mask makes the
+     explosion avoid this element's footprint. */
+  .lockup {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 12px;
+    color: var(--ink);
+  }
+  .lockup .flame { font-size: 40px; line-height: 1; filter: saturate(1.1); }
+  .lockup .name  { font-size: 44px; font-weight: 600; letter-spacing: -0.01em; }
+</style>
+
+<div class="controls">
+  <strong>Máscara:</strong>
+  <span class="seg" id="modeSeg">
+    <button data-mode="off">off (por baixo)</button>
+    <button data-mode="box">box (halo)</button>
+    <button data-mode="glyph" class="active">glyph (contorno)</button>
+  </span>
+  <label>Halo: <input type="range" id="halo" min="0" max="40" value="14"><span id="haloVal">14px</span></label>
+  <label><input type="checkbox" id="showMask"> mostrar máscara</label>
+</div>
+
+<div class="fc-decoration-wrap" id="wrap">
+  <canvas class="fc-decoration" id="cv"></canvas>
+  <div class="lockup" id="lockup">
+    <span class="flame">🔥</span>
+    <span class="name">Firecrawl</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---------------------------------------------------------------------------
+  // CONFIG  (these mirror your existing handoff knobs)
+  // ---------------------------------------------------------------------------
+  const FONT_SIZE = 14;          // px; smaller => denser grid
+  const RAMP = " .,:;i+x*XA#@";  // intensity -> character
+  const COLOR = "236,86,42";     // var(--fire) as rgb, used with per-cell alpha
+  const CPS_MIN = 18, CPS_MAX = 48;
+  const STAGGER = 0.9;           // s — spread of per-row start times
+  const HOLD = 1.1;              // s — pause on full art before looping
+  const RAYS = 11;
+
+  // MASK config -------------------------------------------------------------
+  let MASK_MODE = "glyph";       // "off" | "box" | "glyph"
+  let HALO = 14;                 // px of clean margin kept around the lockup
+  let SHOW_MASK = false;         // debug overlay
+
+  const cv = document.getElementById("cv");
+  const ctx = cv.getContext("2d");
+  const wrap = document.getElementById("wrap");
+  const lockup = document.getElementById("lockup");
+
+  let W = 0, H = 0, dpr = 1;
+  let cols = 0, rows = 0, cellW = 0, lineH = 0;
+  let maskGrid = null;           // Uint8Array length cols*rows; 1 = excluded
+  let startOffset = [], speed = [], cycle = 1;
+
+  // deterministic per-row hash so every loop is identical
+  function rnd(seed) {
+    let t = (seed * 374761393 + 668265263) >>> 0;
+    t = (t ^ (t >>> 13)) >>> 0;
+    t = (t * 1274126177) >>> 0;
+    return ((t ^ (t >>> 16)) >>> 0) / 4294967296;
+  }
+
+  // Static explosion shape -> 0..1. Bottom-weighted + radial rays, to match
+  // the reference (rises from the bottom, densest low). Swap freely.
+  function fieldShape(col, row) {
+    const cx = cols / 2, cy = rows * 0.92;       // origin low on the canvas
+    const dx = (col - cx);
+    const dy = (row - cy) * 2;                   // *2 corrects monospace aspect
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const ang = Math.atan2(dy, dx);
+    const ray = 0.5 + 0.5 * Math.cos(ang * RAYS);
+    const falloff = Math.max(0, 1 - dist / (rows * 1.25));
+    const ring = 0.5 + 0.5 * Math.sin(dist * 0.6);
+    let v = falloff * (0.45 + 0.55 * ray) * (0.6 + 0.4 * ring);
+    // a touch of static grain so the field reads as ASCII, not gradient
+    v *= 0.7 + 0.3 * rnd(col * 73 + row * 19);
+    return Math.max(0, Math.min(1, v));
+  }
+
+  // ===========================================================================
+  // MASK  — this is the whole fix. Build a per-cell "excluded" grid that
+  // follows the foreground lockup, so those cells are never typed.
+  // ===========================================================================
+  function buildMask() {
+    maskGrid = new Uint8Array(cols * rows);
+    if (MASK_MODE === "off") return;
+
+    // Footprint of the foreground element, in canvas CSS pixels.
+    const wr = wrap.getBoundingClientRect();
+    const lr = lockup.getBoundingClientRect();
+    const box = {
+      x: lr.left - wr.left,
+      y: lr.top - wr.top,
+      w: lr.width,
+      h: lr.height,
+    };
+
+    if (MASK_MODE === "box") {
+      // Padded rounded-rect: exclude any cell whose centre is within HALO of
+      // the lockup's bounding box. Soft, robust, no glyph rendering needed —
+      // recommended for production with DOM text on top.
+      const x0 = box.x - HALO, y0 = box.y - HALO;
+      const x1 = box.x + box.w + HALO, y1 = box.y + box.h + HALO;
+      const r = Math.min(HALO + 10, box.h / 2); // corner radius
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const px = col * cellW + cellW / 2;
+          const py = row * lineH + lineH / 2;
+          if (px >= x0 && px <= x1 && py >= y0 && py <= y1) {
+            // round the corners
+            const inX = px < x0 + r ? x0 + r : (px > x1 - r ? x1 - r : px);
+            const inY = py < y0 + r ? y0 + r : (py > y1 - r ? y1 - r : py);
+            const d = Math.hypot(px - inX, py - inY);
+            if (d <= r) maskGrid[row * cols + col] = 1;
+          }
+        }
+      }
+      return;
+    }
+
+    if (MASK_MODE === "glyph") {
+      // True contour: rasterise the SAME lockup into an offscreen canvas at the
+      // same position, read alpha, and exclude cells whose dilated neighbourhood
+      // is covered. Hugs the actual letterforms + flame.
+      const off = document.createElement("canvas");
+      off.width = W; off.height = H;
+      const o = off.getContext("2d");
+      o.scale(dpr, dpr);
+      o.fillStyle = "#000";
+      o.textBaseline = "middle";
+      const cyl = box.y + box.h / 2;
+      // flame
+      o.font = "40px -apple-system, 'Segoe UI', sans-serif";
+      o.fillText("🔥", box.x, cyl);
+      // name (same font as .lockup .name)
+      o.font = "600 44px -apple-system, 'Segoe UI', Roboto, sans-serif";
+      o.fillText("Firecrawl", box.x + 52, cyl);
+
+      const data = o.getImageData(0, 0, W, H).data;
+      const haloPx = Math.max(1, Math.round(HALO * dpr));
+      const covered = (px, py) => {
+        // sample alpha in a small ring of radius halo around the cell centre
+        for (let a = 0; a < 8; a++) {
+          const t = (a / 8) * Math.PI * 2;
+          for (const rr of [0, haloPx]) {
+            const sx = Math.round((px) * dpr + Math.cos(t) * rr);
+            const sy = Math.round((py) * dpr + Math.sin(t) * rr);
+            if (sx < 0 || sy < 0 || sx >= W || sy >= H) continue;
+            if (data[(sy * W + sx) * 4 + 3] > 24) return true;
+          }
+        }
+        return false;
+      };
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const px = col * cellW + cellW / 2;
+          const py = row * lineH + lineH / 2;
+          if (covered(px, py)) maskGrid[row * cols + col] = 1;
+        }
+      }
+    }
+  }
+
+  function resize() {
+    const r = wrap.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.round(r.width * dpr);
+    H = Math.round(r.height * dpr);
+    cv.width = W; cv.height = H;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = `${FONT_SIZE}px ui-monospace, "SF Mono", Menlo, monospace`;
+    cellW = ctx.measureText("M").width;
+    lineH = Math.round(FONT_SIZE * 1.18);
+    cols = Math.ceil(r.width / cellW);
+    rows = Math.ceil(r.height / lineH);
+
+    // per-row deterministic typing params
+    startOffset = []; speed = [];
+    let maxFinish = 0;
+    for (let row = 0; row < rows; row++) {
+      startOffset[row] = rnd(row * 2 + 1) * STAGGER;
+      speed[row] = CPS_MIN + rnd(row * 2 + 2) * (CPS_MAX - CPS_MIN);
+      maxFinish = Math.max(maxFinish, startOffset[row] + cols / speed[row]);
+    }
+    cycle = maxFinish + HOLD;
+
+    buildMask();
+  }
+
+  function render(now) {
+    const t = (now / 1000) % cycle;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.font = `${FONT_SIZE}px ui-monospace, "SF Mono", Menlo, monospace`;
+    ctx.textBaseline = "top";
+
+    for (let row = 0; row < rows; row++) {
+      const typed = Math.max(0, Math.min(cols, Math.floor((t - startOffset[row]) * speed[row])));
+      const y = row * lineH;
+      for (let col = 0; col < typed; col++) {
+        // ---- the mask short-circuit: skip excluded cells ----
+        if (maskGrid && maskGrid[row * cols + col]) continue;
+
+        const v = fieldShape(col, row);
+        if (v < 0.06) continue;
+        const ch = RAMP[Math.min(RAMP.length - 1, Math.floor(v * RAMP.length))];
+        if (ch === " ") continue;
+        ctx.fillStyle = `rgba(${COLOR},${(0.18 + 0.82 * v).toFixed(3)})`;
+        ctx.fillText(ch, col * cellW, y);
+      }
+    }
+
+    if (SHOW_MASK && maskGrid) {
+      ctx.fillStyle = "rgba(0,120,255,0.18)";
+      for (let row = 0; row < rows; row++)
+        for (let col = 0; col < cols; col++)
+          if (maskGrid[row * cols + col]) ctx.fillRect(col * cellW, row * lineH, cellW, lineH);
+    }
+
+    requestAnimationFrame(render);
+  }
+
+  // ---- wiring (demo only) ----
+  document.getElementById("modeSeg").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    MASK_MODE = b.dataset.mode;
+    [...e.currentTarget.children].forEach(c => c.classList.toggle("active", c === b));
+    buildMask();
+  });
+  const haloEl = document.getElementById("halo");
+  haloEl.addEventListener("input", () => {
+    HALO = +haloEl.value;
+    document.getElementById("haloVal").textContent = HALO + "px";
+    buildMask();
+  });
+  document.getElementById("showMask").addEventListener("change", (e) => { SHOW_MASK = e.target.checked; });
+
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
+  window.addEventListener("resize", resize);
+  resize();
+  requestAnimationFrame(render);
+})();
+</script>

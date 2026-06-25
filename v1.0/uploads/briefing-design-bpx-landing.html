@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Briefing de Design &mdash; Nova Landing Page BPX Group</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --bg: #000000;
+            --bg-card: #0a0a0a;
+            --bg-card-alt: #111111;
+            --bg-elevated: #161616;
+            --accent: #ffffff;
+            --accent-green: #ffffff;
+            --accent-purple: #ffffff;
+            --accent-cyan: #ffffff;
+            --accent-orange: #cccccc;
+            --accent-red: #999999;
+            --accent-yellow: #ffffff;
+            --text: #ffffff;
+            --text-secondary: #aaaaaa;
+            --text-muted: #555555;
+            --border: #1e1e1e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER */
+        .header {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: linear-gradient(180deg, #050505 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #333333, transparent);
+        }
+        .tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 100px;
+            margin-bottom: 24px;
+        }
+        .tag-blue { background: rgba(255,255,255,0.06); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); }
+        .tag-green { background: rgba(255,255,255,0.06); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); }
+        .tag-purple { background: rgba(255,255,255,0.06); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); }
+        .tag-cyan { background: rgba(255,255,255,0.06); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); }
+        .tag-orange { background: rgba(255,255,255,0.06); color: #cccccc; border: 1px solid rgba(255,255,255,0.15); }
+        .header h1 { font-size: 44px; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 12px; }
+        .header h1 span { color: var(--accent); }
+        .header .sub { color: var(--text-secondary); font-size: 15px; max-width: 640px; margin: 0 auto; }
+
+        /* LAYOUT */
+        .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+        .section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+        .section:last-child { border-bottom: none; }
+        .section-label {
+            font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 36px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+        /* CARDS */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 36px;
+            margin-bottom: 20px;
+        }
+        .card h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+        .card p, .card li { color: var(--text-secondary); font-size: 14px; }
+
+        /* GRIDS */
+        .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+        /* WIREFRAME VISUAL */
+        .wireframe {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .wf-bar {
+            padding: 10px 18px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .wf-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .wf-body { padding: 0; }
+        .wf-section {
+            padding: 40px 32px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .wf-section:last-child { border-bottom: none; }
+        .wf-section .wf-label {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: var(--bg-elevated);
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        .wf-section .wf-gsap {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 500;
+            color: #ffffff;
+            background: rgba(255,255,255,0.05);
+            padding: 3px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        /* HERO WIREFRAME */
+        .wf-hero {
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(180deg, #080808 0%, #08080c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .wf-hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .wf-hero h2 {
+            font-size: 40px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        .wf-hero h2 .wf-accent { color: var(--accent); }
+        .wf-hero .wf-sub { color: var(--text-muted); font-size: 14px; max-width: 480px; margin-bottom: 24px; }
+        .wf-hero .wf-cta {
+            display: inline-block;
+            padding: 12px 32px;
+            background: #ffffff;
+            color: #000000;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 8px;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+        .wf-hero .wf-nav {
+            position: absolute;
+            top: 20px;
+            left: 32px;
+            right: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wf-hero .wf-nav .wf-logo { font-size: 18px; font-weight: 900; letter-spacing: 3px; }
+        .wf-hero .wf-nav .wf-links { display: flex; gap: 24px; font-size: 11px; color: var(--text-muted); }
+
+        /* BRAND CARDS WIREFRAME */
+        .wf-brands {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding-top: 16px;
+        }
+        .wf-brand-card {
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            padding: 24px 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .wf-brand-card h4 { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+        .wf-brand-card p { font-size: 11px; color: var(--text-muted); }
+
+        /* PILLAR WIREFRAME */
+        .wf-pillars {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding-top: 16px;
+        }
+        .wf-pillar {
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            padding: 28px 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .wf-pillar .wf-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+        .wf-pillar h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+        .wf-pillar p { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+        /* STATS WIREFRAME */
+        .wf-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding-top: 16px;
+        }
+        .wf-stat {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .wf-stat .n { font-size: 28px; font-weight: 900; color: #ffffff; }
+        .wf-stat .l { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+        /* CODE BLOCK */
+        .code-block {
+            background: #080808;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+        .code-block .cm { color: #555; }
+        .code-block .kw { color: #cccccc; }
+        .code-block .fn { color: #dddddd; }
+        .code-block .str { color: #ffffff; }
+        .code-block .num { color: #999999; }
+
+        /* SPEC TABLE */
+        .spec-table { width: 100%; border-collapse: collapse; }
+        .spec-table td { padding: 12px 0; font-size: 13px; border-bottom: 1px solid #1a1a1e; vertical-align: top; }
+        .spec-table td:first-child { color: var(--text-muted); width: 180px; font-weight: 600; }
+        .spec-table tr:last-child td { border-bottom: none; }
+
+        /* LISTS */
+        .feat-list { list-style: none; }
+        .feat-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #1a1a1e;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .feat-list li:last-child { border-bottom: none; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+
+        /* FOOTER */
+        .footer { padding: 40px 0; text-align: center; border-top: 1px solid var(--border); }
+        .footer p { font-size: 11px; color: var(--text-muted); }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 28px; }
+            .g2, .g3, .g4, .wf-brands, .wf-pillars, .wf-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+    <div class="wrap">
+        <div class="tag tag-blue">Briefing de Design</div>
+        <h1>Nova Landing Page <span>BPX Group</span></h1>
+        <p class="sub">Especificacoes de design, estrutura, animacoes GSAP, wireframe visual e guidelines tecnicas para a construcao de uma single-page profissional.</p>
+    </div>
+</div>
+
+<div class="wrap">
+
+    <!-- ===== 01 CONCEITO ===== -->
+    <div class="section">
+        <div class="section-label">01 &mdash; Conceito Geral</div>
+
+        <div class="card">
+            <h3>Direcao Criativa</h3>
+            <p>Uma single-page institucional com visual <strong style="color: var(--text);">monocromatico preto e branco</strong>, tipografia oversized e animacoes de scroll que contam a historia do grupo BPX de forma cinematografica. A ausencia de cor cria um efeito de <strong style="color: var(--text);">sofisticacao maxima</strong> &mdash; o contraste puro entre preto e branco transmite credibilidade, seriedade e confianca.</p>
+            <br>
+            <p>Inspiracao visual: a estetica monocromatica de sites como Linear, Vercel e Apple, onde a hierarquia visual e criada exclusivamente por peso tipografico, espacamento e tonalidades de cinza. O preto e branco funciona como um "terno bem cortado" &mdash; sem distracao, 100% profissional.</p>
+        </div>
+
+        <div class="g3">
+            <div class="card" style="border-top: 2px solid #cccccc;">
+                <h3 style="font-size: 14px; color: var(--accent);">Tom Visual</h3>
+                <p>Preto e branco puro. Monocromatico. Sem cores de acento. Hierarquia visual criada por peso tipografico, tonalidades de cinza (#000 a #FFF) e whitespace generoso.</p>
+            </div>
+            <div class="card" style="border-top: 2px solid #ffffff;">
+                <h3 style="font-size: 14px; color: #ffffff;">Movimento</h3>
+                <p>Animacoes com GSAP que guiam o olhar, nao que distraem. Scroll-driven storytelling. Cada secao se revela conforme o usuario desce a pagina. Smooth scrolling via ScrollSmoother.</p>
+            </div>
+            <div class="card" style="border-top: 2px solid #888888;">
+                <h3 style="font-size: 14px; color: #cccccc;">Tipografia</h3>
+                <p>Oversized headlines no hero e nos titulos de secao. Font moderna (Inter ou similar) para corpo. Pesos fortes (700-900) nos destaques. Contraste maximo texto/fundo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 02 PALETA DE CORES ===== -->
+    <div class="section">
+        <div class="section-label">02 &mdash; Paleta de Cores</div>
+
+        <div class="card">
+            <h3>Paleta Monocromatica &mdash; Preto e Branco</h3>
+            <p style="margin-bottom: 24px;">Apenas preto, branco e tonalidades de cinza. A hierarquia visual e criada exclusivamente por contraste, peso tipografico e espacamento. Sem cores de acento.</p>
+
+            <div class="g4">
+                <div style="background: #000; border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #000000; border: 2px solid #333; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#000000</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Background Principal</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #0a0a0a; border: 2px solid #333; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#0A0A0A</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Cards / Superficies</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #161616; border: 2px solid #333; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#161616</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Elevated / Hover</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #1e1e1e; border: 2px solid #333; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#1E1E1E</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Bordas / Divisores</div>
+                </div>
+            </div>
+            <div class="g4" style="margin-top: 16px;">
+                <div style="background: var(--bg-card); border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #333333; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#333333</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Texto Terciario</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #777777; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#777777</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Texto Secundario</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #aaaaaa; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#AAAAAA</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Corpo de Texto</div>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid #222; border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #ffffff; margin: 0 auto 12px;"></div>
+                    <div style="font-size: 12px; font-weight: 700;">#FFFFFF</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Headlines / CTAs</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 3px solid #333;">
+            <h3 style="font-size: 15px;">Principio: Hierarquia por Luminosidade</h3>
+            <p>Sem cores, a hierarquia visual depende inteiramente da escala de cinza. Headlines em <strong style="color: #fff;">#FFFFFF puro</strong>, corpo de texto em <strong style="color: #aaa;">#AAAAAA</strong>, textos de apoio em <strong style="color: #777;">#777777</strong>, labels e metadados em <strong style="color: #555;">#333333</strong>. A diferenciacao entre as secoes (pilares, marcas) e feita por peso tipografico, tamanho e espacamento &mdash; nunca por cor.</p>
+        </div>
+    </div>
+
+    <!-- ===== 03 WIREFRAME ===== -->
+    <div class="section">
+        <div class="section-label">03 &mdash; Wireframe Visual + Mapa de Animacoes GSAP</div>
+
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 28px;">Cada secao do wireframe inclui a tag <span style="font-family: 'JetBrains Mono'; color: #ffffff; font-size: 12px;">GSAP</span> com o plugin/tecnica de animacao recomendada. A pagina e uma <strong style="color: var(--text);">single-page com scroll suave</strong> (ScrollSmoother) e todas as animacoes sao disparadas por scroll (ScrollTrigger).</p>
+
+        <div class="wireframe">
+            <div class="wf-bar">
+                <div class="wf-dot" style="background: #ff5f57;"></div>
+                <div class="wf-dot" style="background: #ffbd2e;"></div>
+                <div class="wf-dot" style="background: #28ca41;"></div>
+                &nbsp; bpxgroup.io &mdash; Nova Landing Page
+            </div>
+            <div class="wf-body">
+
+                <!-- HERO -->
+                <div class="wf-section wf-hero">
+                    <div class="wf-gsap">GSAP: SplitText + fromTo + stagger</div>
+                    <div class="wf-label">SECAO 01 &mdash; HERO</div>
+                    <div class="wf-nav">
+                        <div class="wf-logo">BPX</div>
+                        <div class="wf-links">
+                            <span>Marcas</span>
+                            <span>Regulamentacao</span>
+                            <span>Atendimento</span>
+                            <span>Seguranca</span>
+                            <span>Contato</span>
+                        </div>
+                    </div>
+                    <h2>Entretenimento digital<br>regulamentado e seguro.</h2>
+                    <p class="wf-sub">O grupo por tras das maiores marcas de apostas autorizadas do Brasil.</p>
+                    <a href="#" class="wf-cta">Conheca nossas marcas</a>
+                </div>
+
+                <!-- MARCAS -->
+                <div class="wf-section" style="padding-top: 52px;">
+                    <div class="wf-gsap">GSAP: ScrollTrigger + stagger + scale</div>
+                    <div class="wf-label">SECAO 02 &mdash; NOSSAS MARCAS</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Nossas Marcas</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 0;">Quatro marcas autorizadas pela SPA/MF operando em todo o Brasil.</p>
+                    <div class="wf-brands">
+                        <div class="wf-brand-card" style="border-top: 2px solid #ffffff;">
+                            <h4 style="color: #ffffff;">VAIDEBET</h4>
+                            <p>vaidebet.bet.br</p>
+                            <p style="margin-top: 4px; font-size: 10px; color: #ffffff;">Marca lider</p>
+                        </div>
+                        <div class="wf-brand-card" style="border-top: 2px solid #888888;">
+                            <h4 style="color: #cccccc;">BETPIX365</h4>
+                            <p>betpix365.bet.br</p>
+                            <p style="margin-top: 4px; font-size: 10px; color: #cccccc;">Apostas + Cassino</p>
+                        </div>
+                        <div class="wf-brand-card" style="border-top: 2px solid #555555;">
+                            <h4 style="color: #dddddd;">PIX365</h4>
+                            <p>Em breve</p>
+                            <p style="margin-top: 4px; font-size: 10px; color: #dddddd;">Em desenvolvimento</p>
+                        </div>
+                        <div class="wf-brand-card" style="border-top: 2px solid #cccccc;">
+                            <h4 style="color: var(--accent);">OBABET</h4>
+                            <p>obabet.bet.br</p>
+                            <p style="margin-top: 4px; font-size: 10px; color: var(--accent);">Nota 9.3 ReclameAQUI</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PILARES -->
+                <div class="wf-section" style="padding-top: 52px; background: linear-gradient(180deg, #050505 0%, #000000 100%);">
+                    <div class="wf-gsap">GSAP: ScrollTrigger + SplitText (titulos) + fromTo (cards)</div>
+                    <div class="wf-label">SECAO 03 &mdash; PILARES</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Nossos Pilares</h3>
+                    <p style="color: var(--text-muted); font-size: 13px;">Os fundamentos que sustentam cada operacao do grupo.</p>
+                    <div class="wf-pillars">
+                        <div class="wf-pillar" style="border-top: 2px solid #ffffff;">
+                            <span class="wf-icon">&#9878;</span>
+                            <h4 style="color: #ffffff;">Regulamentacao</h4>
+                            <p>Autorizacao definitiva SPA/MF. Licenca ate 2029. Abrangencia nacional.</p>
+                        </div>
+                        <div class="wf-pillar" style="border-top: 2px solid #555555;">
+                            <span class="wf-icon">&#9733;</span>
+                            <h4 style="color: #dddddd;">Atendimento</h4>
+                            <p>Selo RA1000 em todas as marcas. Premio ReclameAQUI 2024. Nota 9.3.</p>
+                        </div>
+                        <div class="wf-pillar" style="border-top: 2px solid #888888;">
+                            <span class="wf-icon">&#128274;</span>
+                            <h4 style="color: #cccccc;">Seguranca</h4>
+                            <p>Servidores criptografados. Dados protegidos. Pagamentos seguros.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NUMEROS -->
+                <div class="wf-section" style="padding-top: 52px;">
+                    <div class="wf-gsap">GSAP: ScrollTrigger + countUp (numeros) + stagger</div>
+                    <div class="wf-label">SECAO 04 &mdash; NUMEROS</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Em Numeros</h3>
+                    <p style="color: var(--text-muted); font-size: 13px;">Metricas que demonstram a solidez do grupo.</p>
+                    <div class="wf-stats">
+                        <div class="wf-stat">
+                            <div class="n">4</div>
+                            <div class="l">Marcas Autorizadas</div>
+                        </div>
+                        <div class="wf-stat">
+                            <div class="n">2029</div>
+                            <div class="l">Licenca valida ate</div>
+                        </div>
+                        <div class="wf-stat">
+                            <div class="n">RA1000</div>
+                            <div class="l">Selo em todas as marcas</div>
+                        </div>
+                        <div class="wf-stat">
+                            <div class="n">24h</div>
+                            <div class="l">Saques processados</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTATO / FOOTER -->
+                <div class="wf-section" style="padding-top: 52px; text-align: center; background: linear-gradient(180deg, #08080c 0%, #080808 100%);">
+                    <div class="wf-gsap">GSAP: ScrollTrigger + fadeIn</div>
+                    <div class="wf-label">SECAO 05 &mdash; CONTATO + FOOTER</div>
+                    <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Entre em Contato</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Rua Vidal de Negreiros, 231 &mdash; Centro, Campina Grande - PB</p>
+                    <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-elevated); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px;">in</div>
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-elevated); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px;">ig</div>
+                    </div>
+                    <p style="font-size: 10px; color: var(--text-muted);">BPX Bets Sports Group Ltda &mdash; CNPJ 55.590.815/0001-60 &mdash; Autorizada SPA/MF</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 04 STACK GSAP ===== -->
+    <div class="section">
+        <div class="section-label">04 &mdash; Stack GSAP &mdash; Plugins e Implementacao</div>
+
+        <div class="card">
+            <h3>Plugins Necessarios (todos gratuitos desde 2025)</h3>
+            <table class="spec-table">
+                <tr>
+                    <td style="color: #ffffff;">ScrollSmoother</td>
+                    <td>Scroll suave nativo em toda a pagina. Cria a sensacao "buttery smooth" sem layout jank. Config: <code style="font-family: 'JetBrains Mono'; font-size: 11px; color: #dddddd;">smooth: 1.5, normalizeScroll: true</code></td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">ScrollTrigger</td>
+                    <td>Motor principal. Cada secao dispara animacoes ao entrar no viewport. Controla pin, scrub, snap e callbacks de todas as secoes.</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">SplitText</td>
+                    <td>Divide headlines em chars/words/lines para animacao de reveal letra por letra. Usado no hero e nos titulos de secao.</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">Flip</td>
+                    <td>Transicoes de estado entre layouts (ex: cards de marcas expandindo ao clicar). Animacao de layout sem calculos manuais.</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">Observer</td>
+                    <td>Detecta scroll, touch e pointer events para interacoes customizadas no hero (parallax sutil no mouse move).</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>Instalacao (CDN)</h3>
+            <div class="code-block">
+<span class="cm">&lt;!-- GSAP Core + Plugins (CDN) --&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"https://cdn.jsdelivr.net/npm/gsap@3/dist/SplitText.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"https://cdn.jsdelivr.net/npm/gsap@3/dist/Flip.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"https://cdn.jsdelivr.net/npm/gsap@3/dist/Observer.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Mapa de Animacoes por Secao</h3>
+            <table class="spec-table">
+                <tr>
+                    <td style="color: #dddddd;">Hero</td>
+                    <td><strong>SplitText</strong> no headline (chars, stagger: 0.03) + <strong>fromTo</strong> no subtitulo (opacity 0 &rarr; 1, y: 30 &rarr; 0) + <strong>Observer</strong> parallax sutil no background com mousemove. Easing: <code style="font-family: 'JetBrains Mono'; font-size: 11px;">power3.out</code></td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">Marcas</td>
+                    <td><strong>ScrollTrigger</strong> + <strong>stagger</strong> nos cards (scale: 0.9 &rarr; 1, opacity: 0 &rarr; 1, stagger: 0.12). Trigger: top do card entra em 80% do viewport. Easing: <code style="font-family: 'JetBrains Mono'; font-size: 11px;">back.out(1.4)</code></td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">Pilares</td>
+                    <td><strong>SplitText</strong> no titulo (words) + <strong>fromTo</strong> nos pillar cards (y: 60 &rarr; 0, opacity: 0 &rarr; 1, stagger: 0.15). Bordas superior dos cards animam largura 0% &rarr; 100%. Easing: <code style="font-family: 'JetBrains Mono'; font-size: 11px;">power2.out</code></td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">Numeros</td>
+                    <td>Counter animation com <strong>gsap.to</strong> + <strong>snap</strong> de 0 ate o valor final (ex: 0 &rarr; 4, 0 &rarr; 2029). Dispara quando a secao entra no viewport. Duration: 2s. Easing: <code style="font-family: 'JetBrains Mono'; font-size: 11px;">power1.inOut</code></td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">Contato</td>
+                    <td>Fade-in simples (opacity: 0 &rarr; 1, y: 40 &rarr; 0). Icones sociais com stagger: 0.1. Easing: <code style="font-family: 'JetBrains Mono'; font-size: 11px;">power2.out</code></td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">Global</td>
+                    <td><strong>ScrollSmoother</strong> wrapping toda a pagina (smooth: 1.5). Navbar com blur/transparencia que aparece apos scroll &gt; 100px via ScrollTrigger callback.</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>Exemplo de Codigo &mdash; Hero com SplitText</h3>
+            <div class="code-block">
+<span class="cm">// Registrar plugins</span>
+<span class="fn">gsap</span>.<span class="fn">registerPlugin</span>(ScrollTrigger, ScrollSmoother, SplitText);
+
+<span class="cm">// ScrollSmoother global</span>
+<span class="kw">const</span> smoother = <span class="fn">ScrollSmoother</span>.<span class="fn">create</span>({
+  wrapper: <span class="str">"#smooth-wrapper"</span>,
+  content: <span class="str">"#smooth-content"</span>,
+  smooth: <span class="num">1.5</span>,
+  normalizeScroll: <span class="kw">true</span>,
+  effects: <span class="kw">true</span>
+});
+
+<span class="cm">// Hero headline reveal</span>
+<span class="kw">const</span> heroSplit = <span class="kw">new</span> <span class="fn">SplitText</span>(<span class="str">".hero-title"</span>, { type: <span class="str">"chars, words"</span> });
+
+<span class="fn">gsap</span>.<span class="fn">from</span>(heroSplit.chars, {
+  opacity: <span class="num">0</span>,
+  y: <span class="num">40</span>,
+  rotateX: <span class="num">-40</span>,
+  stagger: <span class="num">0.03</span>,
+  duration: <span class="num">1</span>,
+  ease: <span class="str">"power3.out"</span>,
+  delay: <span class="num">0.3</span>
+});
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 05 SPECS TECNICAS ===== -->
+    <div class="section">
+        <div class="section-label">05 &mdash; Especificacoes Tecnicas</div>
+
+        <div class="g2">
+            <div class="card">
+                <h3 style="font-size: 15px;">Stack Recomendada</h3>
+                <table class="spec-table">
+                    <tr><td>Estrutura</td><td>HTML5 semantico (single file)</td></tr>
+                    <tr><td>Estilo</td><td>CSS custom properties + utility classes</td></tr>
+                    <tr><td>Animacao</td><td>GSAP 3.x + plugins (CDN)</td></tr>
+                    <tr><td>Fonts</td><td>Inter (Google Fonts) ou custom</td></tr>
+                    <tr><td>Icones</td><td>Lucide Icons ou SVG inline</td></tr>
+                    <tr><td>Deploy</td><td>Substituir conteudo atual de bpxgroup.io</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3 style="font-size: 15px;">Performance</h3>
+                <table class="spec-table">
+                    <tr><td>Animacoes</td><td>Usar transform/opacity (GPU). Nunca top/left.</td></tr>
+                    <tr><td>Easing</td><td>power2.out ou power3.out (performance friendly)</td></tr>
+                    <tr><td>Mobile</td><td>ScrollTrigger.matchMedia() para adaptar/desativar animacoes pesadas</td></tr>
+                    <tr><td>Lazy Load</td><td>Imagens com loading="lazy" + IntersectionObserver</td></tr>
+                    <tr><td>will-change</td><td>Aplicar em elementos que animam para hint de GPU</td></tr>
+                    <tr><td>Core Web Vitals</td><td>LCP &lt; 2.5s, CLS &lt; 0.1, FID &lt; 100ms</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size: 15px;">Estrutura HTML Necessaria (ScrollSmoother)</h3>
+            <div class="code-block">
+<span class="kw">&lt;body&gt;</span>
+  <span class="kw">&lt;div</span> id=<span class="str">"smooth-wrapper"</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;div</span> id=<span class="str">"smooth-content"</span><span class="kw">&gt;</span>
+      <span class="kw">&lt;nav</span> class=<span class="str">"navbar"</span><span class="kw">&gt;</span>...<span class="kw">&lt;/nav&gt;</span>
+      <span class="kw">&lt;section</span> class=<span class="str">"hero"</span><span class="kw">&gt;</span>...<span class="kw">&lt;/section&gt;</span>
+      <span class="kw">&lt;section</span> class=<span class="str">"brands"</span><span class="kw">&gt;</span>...<span class="kw">&lt;/section&gt;</span>
+      <span class="kw">&lt;section</span> class=<span class="str">"pillars"</span><span class="kw">&gt;</span>...<span class="kw">&lt;/section&gt;</span>
+      <span class="kw">&lt;section</span> class=<span class="str">"numbers"</span><span class="kw">&gt;</span>...<span class="kw">&lt;/section&gt;</span>
+      <span class="kw">&lt;section</span> class=<span class="str">"contact"</span><span class="kw">&gt;</span>...<span class="kw">&lt;/section&gt;</span>
+      <span class="kw">&lt;footer&gt;</span>...<span class="kw">&lt;/footer&gt;</span>
+    <span class="kw">&lt;/div&gt;</span>
+  <span class="kw">&lt;/div&gt;</span>
+<span class="kw">&lt;/body&gt;</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 06 REFERENCIAS PINTEREST ===== -->
+    <div class="section">
+        <div class="section-label">06 &mdash; Referencias Visuais (com base no board Pinterest "Enterprise")</div>
+
+        <div class="card" style="border-left: 3px solid #555;">
+            <h3 style="color: #999999; font-size: 15px;">Nota sobre o Board do Pinterest</h3>
+            <p>O board <strong style="color: var(--text);">pinterest.com/thiagofelipe1311/enterprise</strong> nao esta acessivel para leitura automatica (restricao do Pinterest). As referencias abaixo foram compiladas a partir de padroes tipicos de boards "enterprise" no Pinterest + pesquisa em Awwwards, Dribbble, Behance e landing.love.</p>
+        </div>
+
+        <div class="card">
+            <h3>Padroes Visuais Identificados em Boards "Enterprise"</h3>
+            <p style="margin-bottom: 20px;">Os boards corporativos/enterprise no Pinterest tipicamente salvam layouts com os seguintes padroes &mdash; que se alinham perfeitamente com o conceito proposto:</p>
+            <div class="g2">
+                <div>
+                    <ul class="feat-list">
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Dark Hero Full-Screen</strong> &mdash; Background escuro com headline branco oversized, subtitulo cinza e CTA com cor de acento</li>
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Card Grid com Hover</strong> &mdash; Cards de produtos/servicos em grid 3-4 colunas com efeito de elevacao no hover</li>
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Stats/Numeros Grandes</strong> &mdash; Secao de metricas com numeros oversized e labels discretos</li>
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Gradientes Sutis</strong> &mdash; Radial gradients escuros como fundo de secoes para criar profundidade</li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="feat-list">
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Sticky Navbar Minimalista</strong> &mdash; Navbar fixa com blur backdrop que aparece apos scroll</li>
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Icones com Glow</strong> &mdash; Icones com halo de cor nos pilares/features</li>
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Tipografia Variable</strong> &mdash; Fontes com peso variavel para criar hierarquia forte (300 a 900)</li>
+                        <li><span class="dot" style="background: var(--accent);"></span><strong style="color: var(--text);">Footer Compacto</strong> &mdash; Footer minimalista com logo, links sociais e dados legais (CNPJ, licenca)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Sites de Referencia Recomendados</h3>
+            <table class="spec-table">
+                <tr>
+                    <td style="color: #dddddd;">linear.app</td>
+                    <td>Hero dark com SplitText reveal, scroll animations, navbar blur. Referencia perfeita de tom premium.</td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">stripe.com</td>
+                    <td>Gradientes sutis, cards de produtos, secao de numeros com countUp, tipografia forte.</td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">vercel.com</td>
+                    <td>Dark theme com scroll storytelling, hero minimalista, animacoes de entrada por secao.</td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">gsap.com</td>
+                    <td>Showcase do proprio GSAP. Dark theme, animacoes de demonstracao inline, ScrollSmoother nativo.</td>
+                </tr>
+                <tr>
+                    <td style="color: #dddddd;">flutter.com/about</td>
+                    <td>Grupo corporativo de iGaming (Flutter Entertainment). Modelo direto do setor. Marcas, regulamentacao, numeros.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== 07 CHECKLIST ===== -->
+    <div class="section">
+        <div class="section-label">07 &mdash; Checklist de Entrega</div>
+
+        <div class="card">
+            <table class="spec-table">
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Arquivo HTML unico (single-page) com CSS inline e JS GSAP via CDN</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>ScrollSmoother ativo em toda a pagina</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Hero com SplitText reveal + parallax sutil</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Secao de marcas com cards interativos (Vaidebet, Betpix365, Pix365, Obabet)</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Secao de pilares (Regulamentacao, Atendimento, Seguranca) com animacoes de reveal</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Secao de numeros com countUp animado</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Navbar sticky com backdrop-blur apos scroll</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Footer com CNPJ, endereco, licenca SPA/MF e links sociais</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>100% responsivo (mobile-first com ScrollTrigger.matchMedia)</td>
+                </tr>
+                <tr>
+                    <td style="color: #ffffff;">&#10003;</td>
+                    <td>Performance: Core Web Vitals otimizados, GPU animations, lazy load</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== FONTES ===== -->
+    <div class="section">
+        <div class="section-label">08 &mdash; Fontes da Pesquisa</div>
+        <div class="card">
+            <ul class="feat-list">
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://gsap.com/docs/v3/Plugins/" style="color: #cccccc; text-decoration: none;">GSAP Plugins Docs</a> &mdash; Documentacao oficial dos plugins</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://gsap.com/docs/v3/Plugins/ScrollTrigger/" style="color: #cccccc; text-decoration: none;">ScrollTrigger Docs</a> &mdash; Documentacao do ScrollTrigger</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://gsapify.com/gsap-scrolltrigger/" style="color: #cccccc; text-decoration: none;">GSAPify</a> &mdash; Guia completo de ScrollTrigger</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://www.annnimate.com/blog/gsap-text-animation-splittext-guide" style="color: #cccccc; text-decoration: none;">Annnimate</a> &mdash; Guia pratico de SplitText 2026</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://www.saasframe.io/blog/10-saas-landing-page-trends-for-2026-with-real-examples" style="color: #cccccc; text-decoration: none;">SaaSFrame</a> &mdash; Tendencias de landing pages 2026</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://www.perfectafternoon.com/2025/hero-section-design/" style="color: #cccccc; text-decoration: none;">PerfectAfternoon</a> &mdash; Hero Section best practices 2026</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://www.figma.com/resource-library/web-design-trends/" style="color: #cccccc; text-decoration: none;">Figma</a> &mdash; Web design trends 2026</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://tympanus.net/codrops/2026/01/15/building-a-scroll-driven-dual-wave-text-animation-with-gsap/" style="color: #cccccc; text-decoration: none;">Codrops</a> &mdash; Scroll-driven text animation com GSAP</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://www.landing.love/collection/gsap/" style="color: #cccccc; text-decoration: none;">landing.love</a> &mdash; Colecao de sites com GSAP (2049+ exemplos)</li>
+                <li><span class="dot" style="background: var(--accent);"></span><a href="https://www.awwwards.com/websites/business-corporate/" style="color: #cccccc; text-decoration: none;">Awwwards</a> &mdash; Business/Corporate websites premiados</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <div class="wrap">
+        <p>Briefing de Design preparado em 22/05/2026 &mdash; Base para desenvolvimento da nova landing page bpxgroup.io &mdash; Stack: HTML + CSS + GSAP 3.x</p>
+    </div>
+</div>
+
+</body>
+</html>

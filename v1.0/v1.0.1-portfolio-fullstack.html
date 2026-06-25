@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thiago Diniz · FullStack Developer</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<!-- Sora font -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<script>
+  // Tailwind config extension
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#020d1a',
+          'bg-card': '#041628',
+          primary: '#002349',
+          accent: '#957C3D',
+          'accent-light': '#c9a84c',
+          text: '#f0f4f8',
+          muted: '#7a90a4',
+          border: '#0e2a42',
+        },
+        fontFamily: {
+          sora: ['Sora', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  :root {
+    --color-bg: #020d1a;
+    --color-bg-card: #041628;
+    --color-primary: #002349;
+    --color-accent: #957C3D;
+    --color-accent-light: #c9a84c;
+    --color-text: #f0f4f8;
+    --color-muted: #7a90a4;
+    --color-border: #0e2a42;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Type scale helpers */
+  .hero-name { font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+  .section-heading { font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
+  .card-heading { font-size: 1.25rem; font-weight: 600; }
+  .body-text { font-size: 1rem; font-weight: 400; line-height: 1.7; }
+  .label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Grain texture overlay */
+  .grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.06; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* Hero radial gradients */
+  .hero-bg {
+    background:
+      radial-gradient(800px 600px at 15% 20%, rgba(0,35,73,0.45), transparent 60%),
+      radial-gradient(600px 500px at 85% 85%, rgba(149,124,61,0.10), transparent 60%),
+      var(--color-bg);
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: absolute; border-radius: 9999px; filter: blur(80px); opacity: 0.55; pointer-events: none;
+  }
+  .orb-blue { background: #00264f; }
+  .orb-gold { background: #957C3D; opacity: 0.35; }
+
+  /* Card */
+  .card {
+    background: var(--color-bg-card);
+    border: 1px solid rgba(149,124,61,0.15);
+    border-radius: 12px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    transform: scaleX(0); transform-origin: center; transition: transform 0.45s ease;
+  }
+  .card:hover { border-color: rgba(149,124,61,0.5); box-shadow: 0 0 30px rgba(149,124,61,0.12); transform: translateY(-2px); }
+  .card:hover::before { transform: scaleX(1); }
+  .card .reveal-on-hover { opacity: 0; transform: translateY(8px); transition: opacity 0.35s ease, transform 0.35s ease; }
+  .card:hover .reveal-on-hover { opacity: 1; transform: translateY(0); }
+
+  /* Pills/tags */
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.35rem 0.8rem; border-radius: 999px;
+    border: 1px solid rgba(149,124,61,0.4);
+    color: var(--color-text);
+    font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em;
+    background: transparent; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  .pill:hover { background: rgba(149,124,61,0.15); border-color: rgba(149,124,61,0.7); }
+
+  .tag {
+    display: inline-flex; align-items: center;
+    padding: 0.3rem 0.6rem; border-radius: 8px;
+    border: 1px solid rgba(149,124,61,0.25);
+    color: var(--color-muted);
+    font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+    background: rgba(0,35,73,0.25);
+  }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.85rem 1.5rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem; transition: all 0.25s ease; cursor: pointer; }
+  .btn-primary { background: var(--color-accent); color: #0c0c0c; box-shadow: 0 0 0 rgba(149,124,61,0); }
+  .btn-primary:hover { background: var(--color-accent-light); box-shadow: 0 0 30px rgba(149,124,61,0.45), 0 0 60px rgba(149,124,61,0.2); transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--color-accent); border: 1px solid var(--color-accent); }
+  .btn-secondary:hover { background: var(--color-accent); color: #0c0c0c; box-shadow: 0 0 20px rgba(149,124,61,0.35); }
+
+  /* Photo placeholder */
+  .photo-frame {
+    width: clamp(220px, 28vw, 360px); aspect-ratio: 1/1; border-radius: 9999px;
+    border: 1px solid rgba(149,124,61,0.5);
+    background:
+      radial-gradient(circle at 30% 30%, rgba(149,124,61,0.18), transparent 55%),
+      radial-gradient(circle at 70% 75%, rgba(0,35,73,0.6), transparent 60%),
+      #03101e;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; box-shadow: 0 0 60px rgba(149,124,61,0.15), inset 0 0 80px rgba(0,0,0,0.6);
+  }
+  .photo-frame::after {
+    content: ''; position: absolute; inset: -8px; border-radius: 9999px;
+    border: 1px dashed rgba(149,124,61,0.25);
+    animation: spin 40s linear infinite;
+  }
+  @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  .photo-frame .ph-label { color: var(--color-muted); font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* Scroll indicator */
+  .scroll-ind {
+    position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
+    color: var(--color-accent); display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .scroll-ind .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-accent); animation: bounce 1.6s ease-in-out infinite; }
+  @keyframes bounce { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(8px); opacity: 1; } }
+
+  /* Timeline */
+  .timeline-wrap { position: relative; }
+  .timeline-line {
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 1px;
+    background: linear-gradient(180deg, transparent 0%, rgba(149,124,61,0.55) 10%, rgba(149,124,61,0.55) 90%, transparent 100%);
+    transform: translateX(-50%);
+  }
+  @media (max-width: 767px) {
+    .timeline-line { left: 16px; }
+  }
+  .tl-entry { position: relative; margin-bottom: 3rem; }
+  .tl-dot {
+    position: absolute; left: 50%; top: 1.2rem; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--color-accent); transform: translateX(-50%);
+    box-shadow: 0 0 0 4px rgba(149,124,61,0.18), 0 0 18px rgba(149,124,61,0.5);
+  }
+  @media (max-width: 767px) {
+    .tl-dot { left: 16px; }
+  }
+
+  /* Bet slip simulator */
+  .bet-slip { background: #03101e; border: 1px solid rgba(149,124,61,0.2); border-radius: 10px; padding: 0.8rem; font-size: 0.75rem; }
+  .bet-row { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0; }
+  .odd-num { font-variant-numeric: tabular-nums; color: var(--color-accent); font-weight: 600; }
+
+  /* Dashboard sim */
+  .mini-bar { width: 10px; background: linear-gradient(180deg, var(--color-accent-light), var(--color-accent)); border-radius: 2px 2px 0 0; transition: height 0.6s cubic-bezier(.2,.8,.2,1); }
+  .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.65rem; padding: 2px 8px; border-radius: 999px; background: rgba(46, 200, 130, 0.12); color: #4ade80; }
+  .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+
+  /* Network diagram */
+  .net-node {
+    background: #03101e; border: 1px solid rgba(149,124,61,0.35);
+    border-radius: 6px; padding: 4px 8px; font-size: 0.65rem; color: var(--color-text);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  /* Contact section */
+  .contact-section {
+    background: var(--color-primary);
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-glow {
+    position: absolute; left: 50%; top: 35%; width: 600px; height: 600px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, rgba(149,124,61,0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .energy-line {
+    position: absolute; left: 0; top: 50%; height: 1px; width: 30%;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    box-shadow: 0 0 10px rgba(149,124,61,0.6), 0 0 25px rgba(149,124,61,0.3);
+    transform: translateX(-100%);
+  }
+
+  /* Social icons */
+  .social-link svg { transition: all 0.25s ease; }
+  .social-link:hover svg { color: var(--color-accent); filter: drop-shadow(0 0 8px rgba(201,168,76,0.7)); transform: scale(1.15); }
+  .social-link span { transition: color 0.25s ease; }
+  .social-link:hover span { color: var(--color-accent-light); }
+
+  /* Nav */
+  nav.top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    background: rgba(2,13,26,0.55); border-bottom: 1px solid rgba(149,124,61,0.08);
+  }
+  nav.top-nav a.nav-link { color: var(--color-muted); transition: color 0.2s ease; font-size: 0.85rem; }
+  nav.top-nav a.nav-link:hover { color: var(--color-accent-light); }
+
+  /* Reduce motion respect */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body class="font-sora">
+
+<!-- Top nav -->
+<nav class="top-nav" data-screen-label="Top Nav">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#hero" class="flex items-center gap-2 group">
+      <span class="w-7 h-7 rounded-md border border-accent/50 flex items-center justify-center text-accent font-bold text-sm group-hover:bg-accent group-hover:text-bg transition-colors">T</span>
+      <span class="text-sm tracking-widest uppercase text-text/80">Thiago Diniz</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a class="nav-link" href="#expertise">Expertise</a>
+      <a class="nav-link" href="#timeline">Journey</a>
+      <a class="nav-link" href="#stack">Stack</a>
+      <a class="nav-link" href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="hidden md:inline-flex btn btn-secondary !py-2 !px-4 !text-xs">Get in touch</a>
+  </div>
+</nav>
+
+<main>
+<!-- ============= HERO ============= -->
+<section id="hero" class="relative min-h-screen flex items-center hero-bg overflow-hidden" data-screen-label="01 Hero">
+  <div class="grain"></div>
+  <!-- Floating orbs -->
+  <div class="orb orb-blue" data-orb="1" style="width: 420px; height: 420px; top: 12%; left: -100px;"></div>
+  <div class="orb orb-gold" data-orb="2" style="width: 260px; height: 260px; bottom: 8%; right: -60px;"></div>
+  <div class="orb orb-blue" data-orb="3" style="width: 200px; height: 200px; top: 60%; left: 40%;"></div>
+
+  <div class="max-w-7xl mx-auto w-full px-6 pt-28 pb-20 relative z-10">
+    <div class="flex flex-col-reverse md:flex-row md:items-center gap-12 md:gap-16">
+      <!-- Left: text -->
+      <div class="md:basis-3/5 w-full">
+        <div class="hero-eyebrow flex items-center gap-2 mb-6">
+          <span class="inline-block w-2 h-2 rounded-full bg-accent shadow-[0_0_10px_rgba(149,124,61,0.8)] animate-pulse"></span>
+          <span class="label text-accent">Available for new opportunities</span>
+        </div>
+        <h1 class="hero-name hero-namel mb-3">
+          Thiago Felipe<br/>
+          <span class="text-accent">Viana Diniz</span>
+        </h1>
+        <p class="hero-role text-xl md:text-2xl text-muted font-light mb-6">
+          FullStack Developer
+          <span class="text-accent/60">·</span>
+          <span class="text-text/70">Campina Grande, BR</span>
+        </p>
+        <p class="hero-bio body-text text-text/85 max-w-2xl mb-10">
+          Computer Science graduate from UEPB. I build high-quality web experiences — from real-time betting platforms to enterprise systems and custom integrations. Solution-oriented, detail-driven, always focused on shipping products that perform.
+        </p>
+        <div class="hero-ctas flex flex-wrap gap-4">
+          <a href="#timeline" class="hero-btn btn btn-primary">
+            See my work
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#contact" class="hero-btn btn btn-secondary">Get in touch</a>
+        </div>
+
+        <!-- Quick facts strip -->
+        <div class="hero-bio mt-12 grid grid-cols-3 gap-6 max-w-lg">
+          <div>
+            <div class="text-accent font-semibold text-2xl">3+</div>
+            <div class="text-xs uppercase tracking-widest text-muted mt-1">Years building</div>
+          </div>
+          <div>
+            <div class="text-accent font-semibold text-2xl">2</div>
+            <div class="text-xs uppercase tracking-widest text-muted mt-1">Betting platforms</div>
+          </div>
+          <div>
+            <div class="text-accent font-semibold text-2xl">UEPB</div>
+            <div class="text-xs uppercase tracking-widest text-muted mt-1">CS Graduate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: photo placeholder -->
+      <div class="md:basis-2/5 flex justify-center md:justify-end">
+        <div class="hero-photo photo-frame">
+          <div class="text-center">
+            <svg class="mx-auto mb-3 text-accent/60" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="3.5"/><path d="M5 20c1.6-3.6 4.2-5.5 7-5.5s5.4 1.9 7 5.5"/></svg>
+            <div class="ph-label">Your photo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-ind label" id="scrollInd">
+    <span>Scroll</span>
+    <div class="dot"></div>
+  </div>
+</section>
+
+<!-- ============= EXPERTISE ============= -->
+<section id="expertise" class="py-28 relative" data-screen-label="02 Expertise">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-2xl mb-16">
+      <span class="label text-accent">— What I build</span>
+      <h2 class="section-heading mt-4 mb-4">Three lanes I move in.</h2>
+      <p class="body-text text-muted">Areas where I have focused my career and technical depth.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 expertise-grid">
+      <!-- CARD 1 -->
+      <article class="card group">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(149,124,61,0.1); border: 1px solid rgba(149,124,61,0.3);">
+            <!-- lightning -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#957C3D" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+          </div>
+          <span class="label text-muted">01</span>
+        </div>
+        <h3 class="card-heading mb-3">Betting &amp; Gaming Platforms</h3>
+        <p class="body-text text-muted text-sm mb-6">
+          High-conversion sportsbook and casino interfaces with real-time data, live odds, and immersive UX. Built for performance and engagement.
+        </p>
+
+        <!-- Hover element -->
+        <div class="reveal-on-hover bet-slip mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="label text-accent">Bet Slip · Live</span>
+            <span class="status-badge">Live</span>
+          </div>
+          <div class="bet-row">
+            <span>Flamengo</span>
+            <span class="odd-num" data-odd="1">1.85</span>
+          </div>
+          <div class="bet-row">
+            <span>Palmeiras</span>
+            <span class="odd-num" data-odd="2">2.45</span>
+          </div>
+          <button class="mt-2 w-full text-[0.7rem] uppercase tracking-widest py-1.5 rounded bg-accent text-bg font-semibold">Place Bet</button>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <span class="tag">React</span>
+          <span class="tag">Next.js</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">Angular</span>
+          <span class="tag">Real-time UI</span>
+        </div>
+      </article>
+
+      <!-- CARD 2 -->
+      <article class="card group">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(149,124,61,0.1); border: 1px solid rgba(149,124,61,0.3);">
+            <!-- dashboard grid -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#957C3D" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          </div>
+          <span class="label text-muted">02</span>
+        </div>
+        <h3 class="card-heading mb-3">Backoffice &amp; Admin Systems</h3>
+        <p class="body-text text-muted text-sm mb-6">
+          Scalable admin panels, operational dashboards, and data management systems. Built for teams that need clarity, speed, and control.
+        </p>
+
+        <div class="reveal-on-hover mb-6">
+          <div class="bet-slip">
+            <div class="flex items-center justify-between mb-3">
+              <span class="label text-accent">Live ops</span>
+              <span class="status-badge">All green</span>
+            </div>
+            <div class="flex items-end gap-2 h-14 mb-2" id="miniChart">
+              <div class="mini-bar" style="height: 30%"></div>
+              <div class="mini-bar" style="height: 55%"></div>
+              <div class="mini-bar" style="height: 40%"></div>
+              <div class="mini-bar" style="height: 70%"></div>
+              <div class="mini-bar" style="height: 60%"></div>
+              <div class="mini-bar" style="height: 85%"></div>
+              <div class="mini-bar" style="height: 50%"></div>
+            </div>
+            <div class="flex items-center justify-between text-[0.7rem]">
+              <span class="text-muted uppercase tracking-widest">Sessions</span>
+              <span class="odd-num" data-counter="sessions">12,480</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <span class="tag">Angular</span>
+          <span class="tag">React</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">Spring Boot</span>
+          <span class="tag">REST APIs</span>
+        </div>
+      </article>
+
+      <!-- CARD 3 -->
+      <article class="card group">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(149,124,61,0.1); border: 1px solid rgba(149,124,61,0.3);">
+            <!-- network nodes -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#957C3D" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 7l3.5 9M17 7l-3.5 9M7 6h10"/></svg>
+          </div>
+          <span class="label text-muted">03</span>
+        </div>
+        <h3 class="card-heading mb-3">Custom Software &amp; Integrations</h3>
+        <p class="body-text text-muted text-sm mb-6">
+          Tailored full-stack solutions connecting systems, automating processes, and delivering scalable architectures. From API design to cloud deployment.
+        </p>
+
+        <div class="reveal-on-hover bet-slip mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="label text-accent">Pipeline</span>
+            <span class="status-badge">Online</span>
+          </div>
+          <svg viewBox="0 0 220 70" class="w-full h-16">
+            <defs>
+              <marker id="arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0,0 L8,4 L0,8 z" fill="#957C3D"/>
+              </marker>
+            </defs>
+            <rect x="2" y="22" width="56" height="26" rx="5" fill="#03101e" stroke="#957C3D" stroke-opacity="0.5"/>
+            <text x="30" y="38" text-anchor="middle" fill="#f0f4f8" font-size="8" font-family="Sora">FRONTEND</text>
+            <rect x="82" y="22" width="56" height="26" rx="5" fill="#03101e" stroke="#957C3D" stroke-opacity="0.5"/>
+            <text x="110" y="38" text-anchor="middle" fill="#f0f4f8" font-size="8" font-family="Sora">API</text>
+            <rect x="162" y="22" width="56" height="26" rx="5" fill="#03101e" stroke="#957C3D" stroke-opacity="0.5"/>
+            <text x="190" y="38" text-anchor="middle" fill="#f0f4f8" font-size="8" font-family="Sora">DATABASE</text>
+            <line x1="58" y1="35" x2="82" y2="35" stroke="#957C3D" stroke-dasharray="3 3" stroke-width="1"/>
+            <line x1="138" y1="35" x2="162" y2="35" stroke="#957C3D" stroke-dasharray="3 3" stroke-width="1"/>
+            <circle r="2.5" fill="#c9a84c">
+              <animateMotion dur="2.4s" repeatCount="indefinite" path="M58,35 L82,35"/>
+            </circle>
+            <circle r="2.5" fill="#c9a84c">
+              <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.2s" path="M138,35 L162,35"/>
+            </circle>
+          </svg>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <span class="tag">Java</span>
+          <span class="tag">Spring Boot</span>
+          <span class="tag">Kafka</span>
+          <span class="tag">AWS</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">Docker</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============= TIMELINE ============= -->
+<section id="timeline" class="py-28 relative" data-screen-label="03 Timeline">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-2xl mb-16">
+      <span class="label text-accent">— Professional Journey</span>
+      <h2 class="section-heading mt-4 mb-4">Where I've been, what I've built.</h2>
+      <p class="body-text text-muted">A trail of platforms, teams, and lessons.</p>
+    </div>
+
+    <div class="timeline-wrap max-w-5xl mx-auto">
+      <div class="timeline-line"></div>
+
+      <!-- ENTRY 1 - LEFT -->
+      <div class="tl-entry md:grid md:grid-cols-2 md:gap-12 pl-10 md:pl-0">
+        <div class="tl-dot"></div>
+        <div class="md:pr-12 md:text-right tl-card" data-dir="-1">
+          <div class="card md:!inline-block md:!text-left text-left">
+            <div class="flex items-center gap-2 mb-2 md:justify-end">
+              <span class="label text-accent">Sep 2024 — Present</span>
+              <span class="pill !py-0.5 !px-2 !text-[0.65rem] !border-accent text-accent">Current</span>
+            </div>
+            <h3 class="text-2xl font-semibold mb-1">Lifters</h3>
+            <p class="text-muted text-sm mb-1">FullStack Developer · Mid-level</p>
+            <p class="text-accent/80 text-xs uppercase tracking-widest mb-4">Project · Obabet — Sports Betting Platform</p>
+            <ul class="space-y-2 text-sm text-text/85 text-left md:text-right">
+              <li>· Built and evolved fullstack features for Obabet using React, Next.js, and Java Spring Framework</li>
+              <li>· Developed responsive, high-performance interfaces integrated with backend services and PostgreSQL</li>
+              <li>· Delivered end-to-end features: from requirements analysis through implementation and maintenance</li>
+              <li>· Applied clean architecture, component organization, and agile practices (Scrum/Kanban)</li>
+            </ul>
+            <div class="flex flex-wrap gap-2 mt-5 md:justify-end">
+              <span class="tag">React</span><span class="tag">Next.js</span><span class="tag">Java</span><span class="tag">Spring</span><span class="tag">PostgreSQL</span><span class="tag">TypeScript</span>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+
+      <!-- ENTRY 2 - RIGHT -->
+      <div class="tl-entry md:grid md:grid-cols-2 md:gap-12 pl-10 md:pl-0">
+        <div class="tl-dot"></div>
+        <div></div>
+        <div class="md:pl-12 tl-card" data-dir="1">
+          <div class="card">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="label text-accent">Nov 2023 — Sep 2024</span>
+            </div>
+            <h3 class="text-2xl font-semibold mb-1">MarjoSports</h3>
+            <p class="text-muted text-sm mb-1">Junior FullStack Developer</p>
+            <p class="text-accent/80 text-xs uppercase tracking-widest mb-4">Project · MarjoSports — Sports Betting Platform</p>
+            <ul class="space-y-2 text-sm text-text/85">
+              <li>· Developed and maintained the MarjoSports platform frontend using Angular, JavaScript, HTML5, and CSS3</li>
+              <li>· Built automations and integrations using Node.js and Python scripts on AWS Lambda</li>
+              <li>· Applied business rules and relational database integrations for functional consistency</li>
+              <li>· Contributed to continuous delivery with Git and agile workflows</li>
+            </ul>
+            <div class="flex flex-wrap gap-2 mt-5">
+              <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">Python</span><span class="tag">AWS Lambda</span><span class="tag">PostgreSQL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTRY 3 - LEFT -->
+      <div class="tl-entry md:grid md:grid-cols-2 md:gap-12 pl-10 md:pl-0">
+        <div class="tl-dot"></div>
+        <div class="md:pr-12 md:text-right tl-card" data-dir="-1">
+          <div class="card text-left">
+            <div class="flex items-center gap-2 mb-2 md:justify-end">
+              <span class="label text-accent">Jan 2023 — Nov 2023</span>
+            </div>
+            <h3 class="text-2xl font-semibold mb-1">MarjoSports</h3>
+            <p class="text-muted text-sm mb-1">Development Intern</p>
+            <p class="text-accent/80 text-xs uppercase tracking-widest mb-4">Project · MarjoSports — Sports Betting Platform</p>
+            <ul class="space-y-2 text-sm text-text/85 text-left md:text-right">
+              <li>· Supported platform quality through functional testing and feature validation</li>
+              <li>· Identified bugs and collaborated with the dev team on fixes and improvements</li>
+              <li>· Managed simultaneous urgent demands with clear communication between users and the technical team</li>
+              <li>· Used SQL analysis and Git for version control and reliability</li>
+            </ul>
+            <div class="flex flex-wrap gap-2 mt-5 md:justify-end">
+              <span class="tag">Git</span><span class="tag">Functional Testing</span><span class="tag">SQL</span>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+
+      <!-- ENTRY 4 - EDUCATION RIGHT -->
+      <div class="tl-entry md:grid md:grid-cols-2 md:gap-12 pl-10 md:pl-0">
+        <div class="tl-dot"></div>
+        <div></div>
+        <div class="md:pl-12 tl-card" data-dir="1">
+          <div class="card">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="label text-accent">Completed 2024</span>
+              <span class="pill !py-0.5 !px-2 !text-[0.65rem] !border-accent text-accent">Education</span>
+            </div>
+            <h3 class="text-2xl font-semibold mb-1">UEPB</h3>
+            <p class="text-muted text-sm mb-1">Universidade Estadual da Paraíba</p>
+            <p class="text-accent/80 text-xs uppercase tracking-widest mb-4">Bachelor's in Computer Science · Campina Grande, PB</p>
+            <div class="rounded-lg p-4 bg-[#03101e] border border-accent/20">
+              <div class="label text-muted mb-1">Undergraduate thesis</div>
+              <p class="text-sm text-text/90 italic">"Green Software Architecture Strategies: an overview"</p>
+              <p class="text-xs text-muted mt-1">Estratégias para Arquitetura de Software Verde: um panorama</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= TECH STACK ============= -->
+<section id="stack" class="py-28 relative" data-screen-label="04 Stack">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-2xl mb-16">
+      <span class="label text-accent">— Tech Stack</span>
+      <h2 class="section-heading mt-4 mb-4">Technologies I work with on a daily basis.</h2>
+      <p class="body-text text-muted">The tools, languages and platforms that ship my work.</p>
+    </div>
+
+    <div class="space-y-10 stack-groups">
+      <!-- group template -->
+      <div class="stack-group">
+        <div class="grid md:grid-cols-[180px,1fr] gap-4 items-baseline">
+          <div class="label text-muted">Frontend</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill">React</span><span class="pill">Next.js</span><span class="pill">TypeScript</span><span class="pill">Angular</span><span class="pill">JavaScript</span><span class="pill">HTML5</span><span class="pill">CSS3</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="grid md:grid-cols-[180px,1fr] gap-4 items-baseline">
+          <div class="label text-muted">Backend</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill">Java</span><span class="pill">Spring Boot</span><span class="pill">Node.js</span><span class="pill">REST APIs</span><span class="pill">JWT</span><span class="pill">OAuth2</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="grid md:grid-cols-[180px,1fr] gap-4 items-baseline">
+          <div class="label text-muted">Databases</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill">PostgreSQL</span><span class="pill">MySQL</span><span class="pill">MongoDB</span><span class="pill">Redis</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="grid md:grid-cols-[180px,1fr] gap-4 items-baseline">
+          <div class="label text-muted">Cloud</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill">AWS EC2</span><span class="pill">ECS</span><span class="pill">Lambda</span><span class="pill">RDS</span><span class="pill">S3</span><span class="pill">SQS</span><span class="pill">SNS</span><span class="pill">CloudWatch</span><span class="pill">Docker</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="grid md:grid-cols-[180px,1fr] gap-4 items-baseline">
+          <div class="label text-muted">Messaging</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill">Kafka</span><span class="pill">RabbitMQ</span><span class="pill">SQS</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="grid md:grid-cols-[180px,1fr] gap-4 items-baseline">
+          <div class="label text-muted">Testing</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill">JUnit</span><span class="pill">Mockito</span><span class="pill">Functional Testing</span>
+          </div>
+        </div>
+      </div>
+      <div class="stack-group">
+        <div class="grid md:grid-cols-[180px,1fr] gap-4 items-baseline">
+          <div class="label text-muted">Practices</div>
+          <div class="flex flex-wrap gap-2">
+            <span class="pill">Scrum</span><span class="pill">Kanban</span><span class="pill">Git</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= CONTACT ============= -->
+<section id="contact" class="contact-section py-32 relative" data-screen-label="05 Contact">
+  <div class="contact-glow"></div>
+  <div class="energy-line" id="energyLine"></div>
+
+  <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+    <span class="label text-accent">— Contact</span>
+    <h2 class="section-heading mt-4 mb-6">Let's build something great together.</h2>
+    <p class="body-text text-text/85 max-w-2xl mx-auto mb-14">
+      Open to new opportunities, collaborations, and challenges. Looking for a developer who cares about quality, performance, and product thinking? Let's talk.
+    </p>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <a class="social-link flex flex-col items-center gap-3 group" href="mailto:thiagof.vdiniz@gmail.com">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="text-text">
+          <rect x="3" y="5" width="18" height="14" rx="2.5"/>
+          <path d="M4 7l8 6 8-6"/>
+        </svg>
+        <span class="text-xs uppercase tracking-widest text-muted">Email</span>
+        <span class="text-[0.7rem] text-text/60 break-all">thiagof.vdiniz@gmail.com</span>
+      </a>
+      <a class="social-link flex flex-col items-center gap-3 group" href="https://www.linkedin.com/in/thiago-diniz-dev" target="_blank" rel="noopener noreferrer">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="text-text">
+          <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.2 8h4.6v14H.2zM8 8h4.4v2h.06c.61-1.16 2.1-2.4 4.32-2.4 4.62 0 5.47 3.04 5.47 7v9.4h-4.6v-8.34c0-1.99-.04-4.55-2.77-4.55-2.77 0-3.2 2.16-3.2 4.4V22H8z"/>
+        </svg>
+        <span class="text-xs uppercase tracking-widest text-muted">LinkedIn</span>
+        <span class="text-[0.7rem] text-text/60">/in/thiago-diniz-dev</span>
+      </a>
+      <a class="social-link flex flex-col items-center gap-3 group" href="https://github.com/ThiagoLifters" target="_blank" rel="noopener noreferrer">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="text-text">
+          <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.13c-3.2.7-3.87-1.37-3.87-1.37-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.52-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.47.11-3.07 0 0 .96-.31 3.16 1.18a10.9 10.9 0 015.74 0c2.2-1.49 3.16-1.18 3.16-1.18.62 1.6.23 2.78.11 3.07.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.4-5.26 5.68.41.36.78 1.05.78 2.13v3.16c0 .31.2.66.79.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+        </svg>
+        <span class="text-xs uppercase tracking-widest text-muted">GitHub</span>
+        <span class="text-[0.7rem] text-text/60">@ThiagoLifters</span>
+      </a>
+      <a class="social-link flex flex-col items-center gap-3 group" href="https://www.instagram.com/tf_diniz/" target="_blank" rel="noopener noreferrer">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="text-text">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+        </svg>
+        <span class="text-xs uppercase tracking-widest text-muted">Instagram</span>
+        <span class="text-[0.7rem] text-text/60">@tf_diniz</span>
+      </a>
+    </div>
+
+    <div class="mt-16 flex items-center justify-center gap-3 text-muted text-sm">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(74,222,128,0.7)]"></span>
+      Currently based in Campina Grande · Paraíba · Brazil
+    </div>
+  </div>
+</section>
+
+<!-- ============= FOOTER ============= -->
+<footer class="text-center py-8 border-t" style="border-color: var(--color-border); color: var(--color-muted); font-size: 0.8rem;">
+  © 2025 Thiago Diniz · Designed &amp; developed by Thiago Diniz
+</footer>
+</main>
+
+<script>
+(function() {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (typeof gsap === 'undefined') return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (!reduceMotion) {
+    // Hero entrance timeline
+    const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    heroTl
+      .from('.hero-eyebrow', { opacity: 0, y: 20, duration: 0.6 })
+      .from('.hero-name', { opacity: 0, y: 30, duration: 0.8 }, '-=0.2')
+      .from('.hero-role', { opacity: 0, y: 20, duration: 0.6 }, '-=0.4')
+      .from('.hero-bio', { opacity: 0, duration: 0.6 }, '-=0.3')
+      .from('.hero-btn', { opacity: 0, y: 10, stagger: 0.15, duration: 0.5 }, '-=0.3')
+      .from('.hero-photo', { opacity: 0, scale: 0.9, duration: 0.8, ease: 'back.out(1.5)' }, '-=0.5');
+
+    // Floating orbs
+    gsap.to('[data-orb="1"]', { y: 30, x: 20, duration: 8, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    gsap.to('[data-orb="2"]', { y: -25, x: -15, duration: 7, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    gsap.to('[data-orb="3"]', { y: 20, x: -25, duration: 9, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+
+    // Scroll-faded scroll indicator
+    gsap.to('#scrollInd', {
+      opacity: 0,
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
+    });
+
+    // Expertise cards entrance
+    gsap.utils.toArray('.expertise-grid .card').forEach((card, i) => {
+      gsap.from(card, {
+        opacity: 0, y: 50, duration: 0.8, ease: 'power3.out', delay: i * 0.15,
+        scrollTrigger: { trigger: card, start: 'top 85%', toggleActions: 'play none none none' },
+      });
+    });
+
+    // Timeline entries
+    gsap.utils.toArray('.tl-card').forEach((entry) => {
+      const dir = parseInt(entry.dataset.dir || '1', 10);
+      gsap.from(entry, {
+        opacity: 0, x: 40 * dir, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: entry, start: 'top 85%', toggleActions: 'play none none none' },
+      });
+    });
+
+    // Stack groups
+    gsap.utils.toArray('.stack-group').forEach((g, i) => {
+      gsap.from(g, {
+        opacity: 0, y: 30, duration: 0.6, ease: 'power3.out', delay: i * 0.08,
+        scrollTrigger: { trigger: g, start: 'top 90%', toggleActions: 'play none none none' },
+      });
+    });
+
+    // Contact section
+    gsap.from('#contact .social-link', {
+      opacity: 0, y: 20, duration: 0.6, stagger: 0.12, ease: 'power3.out',
+      scrollTrigger: { trigger: '#contact', start: 'top 75%', toggleActions: 'play none none none' },
+    });
+
+    // Energy line sweep
+    gsap.to('#energyLine', { x: '400%', duration: 2.8, ease: 'none', repeat: -1 });
+
+    // Subtle odds animation
+    setInterval(() => {
+      document.querySelectorAll('[data-odd]').forEach(el => {
+        const base = el.dataset.odd === '1' ? 1.85 : 2.45;
+        const jitter = (Math.random() - 0.5) * 0.12;
+        el.textContent = (base + jitter).toFixed(2);
+      });
+    }, 1400);
+
+    // Mini chart bars random animate
+    setInterval(() => {
+      document.querySelectorAll('#miniChart .mini-bar').forEach(b => {
+        const h = 25 + Math.random() * 70;
+        b.style.height = h + '%';
+      });
+    }, 1800);
+
+    // Counter tick
+    let session = 12480;
+    setInterval(() => {
+      session += Math.floor(Math.random() * 8);
+      const el = document.querySelector('[data-counter="sessions"]');
+      if (el) el.textContent = session.toLocaleString();
+    }, 1200);
+  }
+})();
+</script>
+</body>
+</html>

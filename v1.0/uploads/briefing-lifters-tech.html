@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Briefing Completo &mdash; Lifters Tecnologia | Análise + Proposta de Redesign</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --bg: #050508;
+            --bg-card: #0c0c10;
+            --bg-card-alt: #121218;
+            --bg-elevated: #1a1a22;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99,102,241,0.15);
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16,185,129,0.12);
+            --accent-cyan: #06b6d4;
+            --accent-cyan-glow: rgba(6,182,212,0.12);
+            --accent-orange: #f59e0b;
+            --accent-orange-glow: rgba(245,158,11,0.12);
+            --accent-red: #ef4444;
+            --accent-pink: #ec4899;
+            --text: #f0f0f5;
+            --text-secondary: #9ca3af;
+            --text-muted: #4b5563;
+            --border: #1f1f2e;
+            --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --gradient-2: linear-gradient(135deg, #10b981, #06b6d4);
+            --gradient-3: linear-gradient(135deg, #f59e0b, #ef4444);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            padding: 80px 0 64px;
+            text-align: center;
+            background: linear-gradient(180deg, #08081a 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 100px;
+            margin-bottom: 24px;
+        }
+        .tag-primary { background: var(--accent-glow); color: var(--accent-light); border: 1px solid rgba(99,102,241,0.3); }
+        .tag-green { background: var(--accent-green-glow); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); }
+        .tag-cyan { background: var(--accent-cyan-glow); color: var(--accent-cyan); border: 1px solid rgba(6,182,212,0.3); }
+        .tag-orange { background: var(--accent-orange-glow); color: var(--accent-orange); border: 1px solid rgba(245,158,11,0.3); }
+        .header h1 { font-size: 44px; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 12px; }
+        .header h1 span { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header .sub { color: var(--text-secondary); font-size: 15px; max-width: 660px; margin: 0 auto; }
+        .header-meta {
+            margin-top: 32px;
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+        .header-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .header-meta-item strong { color: var(--text-secondary); }
+
+        /* ========== LAYOUT ========== */
+        .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+        .section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+        .section:last-child { border-bottom: none; }
+        .section-label {
+            font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .section-label.purple { color: var(--accent-light); }
+        .section-label.green { color: var(--accent-green); }
+        .section-label.cyan { color: var(--accent-cyan); }
+        .section-label.orange { color: var(--accent-orange); }
+        .section-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 24px; }
+
+        /* ========== CARDS ========== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+        }
+        .card:hover { border-color: rgba(99,102,241,0.3); }
+        .card h3 {
+            font-size: 17px; font-weight: 700; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .card p, .card li { color: var(--text-secondary); font-size: 14px; }
+        .card ul { list-style: none; padding: 0; }
+        .card li { padding: 6px 0; padding-left: 18px; position: relative; }
+        .card li::before {
+            content: '›';
+            position: absolute; left: 0; color: var(--accent-light); font-weight: 700;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .header h1 { font-size: 30px; }
+        }
+
+        /* ========== HIGHLIGHT CARD ========== */
+        .highlight {
+            background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.04));
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px 0;
+        }
+        .highlight h3 { color: var(--accent-light); font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+        .highlight p { color: var(--text-secondary); font-size: 14px; }
+
+        /* ========== STAT CARDS ========== */
+        .stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+        .stat-card {
+            flex: 1; min-width: 140px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 32px; font-weight: 900; letter-spacing: -1px;
+            background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .stat-card .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ========== PILLAR CARDS ========== */
+        .pillar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .pillar-card.purple::before { background: var(--gradient-1); }
+        .pillar-card.green::before { background: var(--gradient-2); }
+        .pillar-card.orange::before { background: var(--gradient-3); }
+        .pillar-card .icon { font-size: 36px; margin-bottom: 16px; }
+        .pillar-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+        .pillar-card .desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+        .pillar-card ul { list-style: none; padding: 0; }
+        .pillar-card li { padding: 5px 0; padding-left: 20px; position: relative; color: var(--text-secondary); font-size: 13px; }
+        .pillar-card li::before { content: '→'; position: absolute; left: 0; font-weight: 700; }
+        .pillar-card.purple li::before { color: var(--accent-light); }
+        .pillar-card.green li::before { color: var(--accent-green); }
+        .pillar-card.orange li::before { color: var(--accent-orange); }
+
+        /* ========== CODE BLOCK ========== */
+        .code-block {
+            background: #0d0d14;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            margin: 16px 0;
+            position: relative;
+        }
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .keyword { color: var(--accent-light); }
+        .code-block .string { color: var(--accent-green); }
+        .code-block .func { color: var(--accent-cyan); }
+        .code-block .number { color: var(--accent-orange); }
+        .code-label {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ========== TABLE ========== */
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        th, td { padding: 12px 16px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; }
+        td { color: var(--text-secondary); }
+
+        /* ========== WIREFRAME ========== */
+        .wireframe-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 12px 0;
+            position: relative;
+        }
+        .wireframe-section .ws-tag {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--bg);
+            padding: 2px 12px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .wireframe-section .ws-tag.gsap { color: var(--accent-green); border-color: rgba(16,185,129,0.3); }
+        .wireframe-section .ws-label { font-size: 18px; font-weight: 700; margin-bottom: 6px; margin-top: 8px; }
+        .wireframe-section .ws-desc { color: var(--text-secondary); font-size: 13px; }
+        .wireframe-section .ws-anim {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .ws-anim-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .ws-anim-tag.scroll { background: rgba(16,185,129,0.1); color: var(--accent-green); }
+        .ws-anim-tag.split { background: rgba(6,182,212,0.1); color: var(--accent-cyan); }
+        .ws-anim-tag.clip { background: rgba(99,102,241,0.1); color: var(--accent-light); }
+        .ws-anim-tag.counter { background: rgba(245,158,11,0.1); color: var(--accent-orange); }
+        .ws-anim-tag.flip { background: rgba(236,72,153,0.1); color: var(--accent-pink); }
+
+        /* ========== PALETTE ========== */
+        .palette-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+        .swatch {
+            width: 80px; height: 80px;
+            border-radius: 12px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-end;
+            padding-bottom: 8px;
+            font-size: 10px; font-weight: 600;
+            border: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ========== DIVIDER ========== */
+        .part-divider {
+            text-align: center;
+            padding: 64px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .part-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border);
+        }
+        .part-divider .badge {
+            position: relative;
+            display: inline-block;
+            background: var(--bg);
+            padding: 12px 32px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+        }
+
+        /* ========== CHECKLIST ========== */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li {
+            padding: 10px 0;
+            padding-left: 28px;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: var(--accent-light);
+            font-size: 15px;
+        }
+
+        /* ========== NOTE CALLOUT ========== */
+        .note {
+            background: rgba(245,158,11,0.06);
+            border-left: 3px solid var(--accent-orange);
+            border-radius: 0 8px 8px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .note strong { color: var(--accent-orange); }
+
+        /* ========== TOC ========== */
+        .toc {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin: 32px 0;
+        }
+        .toc h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+        .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .toc a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toc a:hover { background: rgba(99,102,241,0.08); color: var(--accent-light); }
+        .toc a .num { color: var(--text-muted); font-weight: 700; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+
+        @media (max-width: 600px) {
+            .toc-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================================================================== -->
+<!--  HEADER                                                            -->
+<!-- ================================================================== -->
+<div class="header">
+    <div class="wrap">
+        <div class="tag tag-primary">Briefing Completo</div>
+        <h1>Lifters <span>Tecnologia</span></h1>
+        <p class="sub">Análise institucional + Proposta de redesign do site lifters.tech — comercial, interativo e profissional com animações GSAP</p>
+        <div class="header-meta">
+            <div class="header-meta-item">📍 <strong>João Pessoa, PB</strong></div>
+            <div class="header-meta-item">🌐 <strong>lifters.tech</strong></div>
+            <div class="header-meta-item">📅 <strong>Maio 2026</strong></div>
+        </div>
+    </div>
+</div>
+
+<div class="wrap">
+
+    <!-- TOC -->
+    <div class="toc">
+        <h3>Índice do Documento</h3>
+        <div class="toc-grid">
+            <a href="#about"><span class="num">01</span> Quem é a Lifters</a>
+            <a href="#services"><span class="num">02</span> Serviços & Modelo de Atuação</a>
+            <a href="#verticals"><span class="num">03</span> Verticais de Mercado</a>
+            <a href="#market"><span class="num">04</span> Contexto de Mercado</a>
+            <a href="#current-analysis"><span class="num">05</span> Análise do Site Atual</a>
+            <a href="#redesign"><span class="num">06</span> Proposta de Redesign</a>
+            <a href="#palette"><span class="num">07</span> Paleta & Tipografia</a>
+            <a href="#wireframe"><span class="num">08</span> Wireframe Visual + GSAP</a>
+            <a href="#animations"><span class="num">09</span> Catálogo de Animações</a>
+            <a href="#tech-spec"><span class="num">10</span> Especificação Técnica</a>
+            <a href="#prompt"><span class="num">11</span> Prompt para Claude Design</a>
+            <a href="#checklist"><span class="num">12</span> Checklist de Entrega</a>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!--  PARTE 1 — ANÁLISE INSTITUCIONAL                                   -->
+    <!-- ================================================================== -->
+    <div class="part-divider">
+        <div class="badge">Parte 1 — Análise Institucional</div>
+    </div>
+
+    <!-- SECTION 1: QUEM É A LIFTERS -->
+    <div class="section" id="about">
+        <div class="section-label purple">01 — Identidade</div>
+        <div class="section-title">Quem é a Lifters Tecnologia</div>
+
+        <div class="highlight">
+            <h3>Posicionamento</h3>
+            <p><strong>Software House de plataformas digitais no Brasil.</strong> Especializada no desenvolvimento de plataformas robustas, escaláveis e seguras — da concepção da solução à operação em produção, atendendo cenários críticos de negócio.</p>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>🏢 Dados Corporativos</h3>
+                <ul>
+                    <li><strong>Razão:</strong> Lifters Tecnologia</li>
+                    <li><strong>Tipo:</strong> Software House</li>
+                    <li><strong>Sede:</strong> R. Fernando Luiz Henriques Dos Santos, 1271 — Jardim Oceania, João Pessoa/PB, 58037-051</li>
+                    <li><strong>Site:</strong> lifters.tech</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>🔗 Presença Digital</h3>
+                <ul>
+                    <li><strong>LinkedIn:</strong> linkedin.com/company/lifters-tech</li>
+                    <li><strong>Instagram:</strong> @lifters.tech</li>
+                    <li><strong>Recrutamento:</strong> lifters.vagas.solides.com.br</li>
+                    <li><strong>E-mail:</strong> Disponível via formulário no site</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+            <h3>💡 Proposta de Valor</h3>
+            <p>A Lifters reúne as melhores práticas para guiar seus clientes nos desafios de criação e desenvolvimento de software de maneira ágil, incremental e colaborativa. Atua com empresas que possuem operações críticas, alto volume de usuários ou transações, e necessidade real de tecnologia confiável.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 2: SERVIÇOS -->
+    <div class="section" id="services">
+        <div class="section-label green">02 — Serviços</div>
+        <div class="section-title">Serviços & Modelo de Atuação</div>
+
+        <div class="grid-3">
+            <div class="pillar-card purple">
+                <div class="icon">⚡</div>
+                <h3>Desenvolvimento & Modernização</h3>
+                <div class="desc">Aplicações, plataformas e sistemas com squads multidisciplinares</div>
+                <ul>
+                    <li>Apps mobile e web de alta performance</li>
+                    <li>Modernização de sistemas legados</li>
+                    <li>Squads sob demanda (on-demand)</li>
+                    <li>Entrega ágil e incremental</li>
+                    <li>Integração com times internos do cliente</li>
+                </ul>
+            </div>
+            <div class="pillar-card green">
+                <div class="icon">🎨</div>
+                <h3>Pesquisa, Design & Co-criação</h3>
+                <div class="desc">Soluções digitais únicas, eficientes e escaláveis</div>
+                <ul>
+                    <li>UX Research e testes de usabilidade</li>
+                    <li>Design de interfaces intuitivas</li>
+                    <li>Prototipação e validação rápida</li>
+                    <li>Co-criação com stakeholders</li>
+                    <li>Design Systems escaláveis</li>
+                </ul>
+            </div>
+            <div class="pillar-card orange">
+                <div class="icon">☁️</div>
+                <h3>Arquitetura de Soluções & Cloud</h3>
+                <div class="desc">Escalar produtos com segurança e eficiência</div>
+                <ul>
+                    <li>Arquitetura de microsserviços</li>
+                    <li>Cloud-native e serverless</li>
+                    <li>DevOps e CI/CD</li>
+                    <li>Monitoramento e observabilidade</li>
+                    <li>Segurança e compliance</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight" style="margin-top:24px">
+            <h3>Modelo de Squad sob Demanda</h3>
+            <p>A Lifters oferece times multidisciplinares completos — desenvolvedores, designers, QAs, tech leads e product owners — prontos para operar como extensão do time do cliente. Da concepção à operação em produção, cobrindo todo o ciclo de vida do software.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: VERTICAIS -->
+    <div class="section" id="verticals">
+        <div class="section-label cyan">03 — Verticais</div>
+        <div class="section-title">Verticais de Mercado</div>
+
+        <p style="color:var(--text-secondary); font-size:14px; margin-bottom:24px;">
+            A Lifters transforma a experiência do usuário com soluções intuitivas em três verticais-chave, criando interações mais rápidas, seguras e personalizadas.
+        </p>
+
+        <div class="grid-3">
+            <div class="pillar-card purple">
+                <div class="icon">🏦</div>
+                <h3>Processamento Bancário</h3>
+                <div class="desc">Transações em alta escala com confiabilidade</div>
+                <ul>
+                    <li>Suporte a alto volume de transações sem perder velocidade</li>
+                    <li>Integração simplificada para conectar sistemas com eficiência</li>
+                    <li>Criptografia avançada e proteção contra fraudes em tempo real</li>
+                    <li>Fluxos com PIX e soluções de pagamento</li>
+                </ul>
+            </div>
+            <div class="pillar-card green">
+                <div class="icon">🤖</div>
+                <h3>Reconhecimento Facial</h3>
+                <div class="desc">Autenticação segura e verificação de identidade</div>
+                <ul>
+                    <li>Soluções intuitivas para autenticação biométrica</li>
+                    <li>Verificação de identidade em tempo real</li>
+                    <li>Integração com plataformas de onboarding</li>
+                    <li>Compliance com LGPD e regulações de dados</li>
+                </ul>
+            </div>
+            <div class="pillar-card orange">
+                <div class="icon">🎰</div>
+                <h3>iGaming</h3>
+                <div class="desc">Plataformas de apostas escaláveis e reguladas</div>
+                <ul>
+                    <li>Plataformas que suportam alto volume de apostas</li>
+                    <li>Interfaces baseadas em UX que engajam e convertem</li>
+                    <li>Conformidade regulatória e prevenção de fraudes</li>
+                    <li>Integração com gateways PIX e pagamentos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: MERCADO -->
+    <div class="section" id="market">
+        <div class="section-label orange">04 — Contexto</div>
+        <div class="section-title">Contexto de Mercado</div>
+
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="number">R$ 762B</div>
+                <div class="label">Mercado TIC Brasil/ano</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">8.4%</div>
+                <div class="label">Crescimento anual TIC</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">R$ 37B+</div>
+                <div class="label">Receita iGaming 2025</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">25M+</div>
+                <div class="label">Apostadores online BR</div>
+            </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px">
+            <div class="card">
+                <h3>📊 Software Houses no Brasil</h3>
+                <p>O setor de TIC cresce 3x mais rápido que o PIB nacional. +70% das empresas planejam digitalizar processos críticos até 2026. 41% das empresas do setor reportam falta de mão de obra qualificada como principal gargalo — o modelo de squads sob demanda da Lifters se posiciona diretamente neste gap.</p>
+            </div>
+            <div class="card">
+                <h3>🎯 iGaming Regulamentado</h3>
+                <p>Desde janeiro de 2025, o Brasil regulamentou oficialmente as apostas de quota fixa. Receita bruta estimada em R$ 37B+ em 2025, com projeção de crescimento de 25% para 2026. Maior mercado da América Latina. Exigências de compliance, KYC, prevenção a fraudes e jogo responsável impulsionam a demanda por tecnologia especializada.</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+            <h3>🚀 Tendências Tecnológicas 2025–2026</h3>
+            <ul>
+                <li>IA Generativa nos processos de desenvolvimento e personalização de UX</li>
+                <li>Arquiteturas serverless e edge computing</li>
+                <li>Cybersecurity e prevenção de fraudes em tempo real</li>
+                <li>PIX e meios de pagamento instantâneos como commodity</li>
+                <li>Convergência de IA + cibersegurança no iGaming</li>
+                <li>Consolidação de plataformas low-code/no-code</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 5: ANÁLISE DO SITE ATUAL -->
+    <div class="section" id="current-analysis">
+        <div class="section-label purple">05 — Diagnóstico</div>
+        <div class="section-title">Análise do Site Atual (lifters.tech)</div>
+
+        <div class="note">
+            <strong>⚠️ Nota:</strong> O conteúdo completo do site não pôde ser acessado diretamente por restrições técnicas durante a pesquisa. A análise abaixo foi baseada em metadados do Google, snippets de busca, perfis de LinkedIn e Instagram. <strong>Thiago, valide e complemente com informações internas que estejam faltando.</strong>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>✅ Pontos Positivos Identificados</h3>
+                <ul>
+                    <li>Posicionamento claro: "Software House de plataformas digitais"</li>
+                    <li>Verticais bem definidas (Banking, Facial, iGaming)</li>
+                    <li>Modelo de squads sob demanda é diferencial competitivo</li>
+                    <li>Presença ativa no LinkedIn e Instagram</li>
+                    <li>Portal de vagas organizado (Solides)</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>❌ Oportunidades de Melhoria</h3>
+                <ul>
+                    <li>Site precisa de mais impacto visual e interatividade</li>
+                    <li>Falta storytelling — o visitante precisa sentir a expertise</li>
+                    <li>Ausência de cases visíveis e métricas de resultado</li>
+                    <li>Animações inexistentes ou genéricas</li>
+                    <li>Experiência de scroll não diferenciada</li>
+                    <li>CTA fraco — falta urgência e direcionamento comercial</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight" style="margin-top:20px">
+            <h3>Objetivo do Redesign</h3>
+            <p>Transformar lifters.tech em uma experiência comercial premium — com animações tecnológicas sofisticadas, storytelling que transmite autoridade, seções que vendem (não apenas informam), e interatividade que posiciona a Lifters como referência em plataformas digitais no Brasil.</p>
+        </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!--  PARTE 2 — PROPOSTA DE REDESIGN                                    -->
+    <!-- ================================================================== -->
+    <div class="part-divider">
+        <div class="badge">Parte 2 — Proposta de Redesign</div>
+    </div>
+
+    <!-- SECTION 6: PROPOSTA -->
+    <div class="section" id="redesign">
+        <div class="section-label green">06 — Conceito Criativo</div>
+        <div class="section-title">Proposta de Redesign</div>
+
+        <div class="highlight">
+            <h3>Conceito: "Code in Motion"</h3>
+            <p>Um site que <strong>respira tecnologia</strong>. Cada scroll revela conteúdo com animações que remetem a código sendo executado, dados fluindo e interfaces se construindo em tempo real. O visitante não lê — ele <strong>experimenta</strong> a expertise da Lifters. Background fixo com conteúdo que flui por cima, transições suaves, tipografia que se revela caractere por caractere, e contadores que pulsam com dados reais.</p>
+        </div>
+
+        <div class="card">
+            <h3>🎯 Diretrizes Criativas</h3>
+            <table>
+                <tr><th>Aspecto</th><th>Diretriz</th></tr>
+                <tr><td><strong>Tom</strong></td><td>Tecnológico, premium, confiável. Sem ser genérico ou corporativo demais.</td></tr>
+                <tr><td><strong>Experiência</strong></td><td>Single-page com scroll suave (ScrollSmoother). Background fixo, conteúdo desliza por cima.</td></tr>
+                <tr><td><strong>Animações</strong></td><td>Cada seção tem uma animação GSAP própria — nunca apenas fade-in. Combinação de SplitText, clip-path, scale+blur, parallax e counters.</td></tr>
+                <tr><td><strong>Objetivo Comercial</strong></td><td>Converter visitantes em leads qualificados. Cada seção termina com um micro-CTA ou direcionamento para contato.</td></tr>
+                <tr><td><strong>Mobile</strong></td><td>Responsive-first. Animações simplificadas no mobile, mantendo impacto visual.</td></tr>
+                <tr><td><strong>Performance</strong></td><td>GSAP via CDN, lazy-load de imagens, will-change estratégico, kill de triggers fora da viewport.</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECTION 7: PALETA -->
+    <div class="section" id="palette">
+        <div class="section-label cyan">07 — Visual</div>
+        <div class="section-title">Paleta de Cores & Tipografia</div>
+
+        <div class="card">
+            <h3>🎨 Paleta Principal — Dark Tech</h3>
+            <p style="margin-bottom:16px">Fundo escuro profundo com acentos de cor vibrantes que remetem a interfaces de código e dashboards tech.</p>
+            <div class="palette-row">
+                <div class="swatch" style="background:#050508; color:#666;">#050508<br><span style="font-size:9px">BG</span></div>
+                <div class="swatch" style="background:#0c0c10; color:#666;">#0C0C10<br><span style="font-size:9px">CARD</span></div>
+                <div class="swatch" style="background:#1a1a22; color:#888;">#1A1A22<br><span style="font-size:9px">ELEVATED</span></div>
+                <div class="swatch" style="background:#6366f1; color:#fff;">#6366F1<br><span style="font-size:9px">ACCENT</span></div>
+                <div class="swatch" style="background:#10b981; color:#fff;">#10B981<br><span style="font-size:9px">GREEN</span></div>
+                <div class="swatch" style="background:#06b6d4; color:#fff;">#06B6D4<br><span style="font-size:9px">CYAN</span></div>
+                <div class="swatch" style="background:#f59e0b; color:#fff;">#F59E0B<br><span style="font-size:9px">ORANGE</span></div>
+                <div class="swatch" style="background:#f0f0f5; color:#111;">#F0F0F5<br><span style="font-size:9px">TEXT</span></div>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>💡 Nota sobre paleta:</strong> A paleta usa indigo (#6366F1) como cor primária — tecnológica, moderna e distinta. Os acentos de verde, ciano e laranja diferenciam cada vertical (Banking, Facial, iGaming). Se preferir monocromático preto e branco como na BPX, basta informar que ajustamos.
+        </div>
+
+        <div class="grid-2" style="margin-top:20px">
+            <div class="card">
+                <h3>🔤 Tipografia</h3>
+                <ul>
+                    <li><strong>Headlines:</strong> Inter (800/900) — moderna, geométrica, tech</li>
+                    <li><strong>Body:</strong> Inter (400/500) — excelente legibilidade</li>
+                    <li><strong>Code/Tags:</strong> JetBrains Mono — identidade developer</li>
+                    <li><strong>Tamanhos:</strong> Hero 72px → H2 36px → Body 16px</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>📐 Princípios de Layout</h3>
+                <ul>
+                    <li>Max-width: 1200px centralizado</li>
+                    <li>Grids de 12 colunas</li>
+                    <li>Espaçamento baseado em 8px</li>
+                    <li>Border-radius: 12–16px para cards</li>
+                    <li>Glassmorphism sutil nos overlays</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 8: WIREFRAME -->
+    <div class="section" id="wireframe">
+        <div class="section-label purple">08 — Wireframe</div>
+        <div class="section-title">Wireframe Visual com Mapa de Animações GSAP</div>
+
+        <p style="color:var(--text-secondary); font-size:14px; margin-bottom:28px;">
+            Cada seção do site tem animações GSAP específicas. As tags indicam qual plugin e técnica usar em cada bloco.
+        </p>
+
+        <!-- HERO -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">HERO — PINNED</div>
+            <div class="ws-label">01 — Hero com Background Fixo</div>
+            <div class="ws-desc">
+                Background escuro com grid pattern fixo (position: fixed). Título "Lifters" aparece caractere por caractere com SplitText. Subtítulo "Software House de plataformas digitais" desliza da esquerda com clip-path. CTA pulsa com glow. Partículas de código/dados fluem no background com canvas ou CSS.
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag scroll">ScrollSmoother</span>
+                <span class="ws-anim-tag split">SplitText → chars</span>
+                <span class="ws-anim-tag clip">clip-path reveal</span>
+            </div>
+        </div>
+
+        <!-- SOBRE -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">SCROLL REVEAL</div>
+            <div class="ws-label">02 — Sobre a Lifters</div>
+            <div class="ws-desc">
+                Texto curto de posicionamento com SplitText word-by-word fade. Ao lado, um card com dados-chave (localização, modelo, expertise). O bloco inteiro sobe com scale 0.9→1 + blur 10→0 conforme o scroll avança.
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag split">SplitText → words</span>
+                <span class="ws-anim-tag scroll">ScrollTrigger scrub</span>
+                <span class="ws-anim-tag clip">scale+blur reveal</span>
+            </div>
+        </div>
+
+        <!-- SERVIÇOS -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">HORIZONTAL SLIDE</div>
+            <div class="ws-label">03 — Serviços (3 Pilares)</div>
+            <div class="ws-desc">
+                3 cards de serviço que entram horizontalmente da direita, um por um, conforme o scroll. Cada card tem ícone animado (SVG draw), título com SplitText e lista que aparece item por item. Ao hover, borda ganha glow na cor da respectiva vertical.
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag scroll">ScrollTrigger stagger</span>
+                <span class="ws-anim-tag clip">xPercent slide-in</span>
+                <span class="ws-anim-tag split">SplitText → lines</span>
+            </div>
+        </div>
+
+        <!-- VERTICAIS -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">PINNED + FLIP</div>
+            <div class="ws-label">04 — Verticais de Mercado (Banking · Facial · iGaming)</div>
+            <div class="ws-desc">
+                Seção pinada com 3 "slides" que transicionam com Flip plugin. Cada vertical ocupa a tela inteira durante o scroll. Ícone grande no centro com animação SVG draw. Título com SplitText chars. Lista de features aparece com stagger. Background muda de cor sutilmente em cada vertical. Contadores animados de métricas (ex: "10K+ transações/seg").
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag scroll">ScrollTrigger pin+snap</span>
+                <span class="ws-anim-tag flip">Flip transitions</span>
+                <span class="ws-anim-tag counter">Counter snap</span>
+                <span class="ws-anim-tag split">SplitText → chars</span>
+            </div>
+        </div>
+
+        <!-- CASES / NÚMEROS -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">PARALLAX + COUNTER</div>
+            <div class="ws-label">05 — Cases & Números</div>
+            <div class="ws-desc">
+                Grid de cards com cases ou métricas de impacto. Contadores animados (0→valor final) com snap integer. Cards com parallax data-speed diferente criando profundidade. Hover revela mais detalhes com Flip. Se não houver cases reais, usar métricas genéricas (projetos entregues, squads ativos, uptime, etc).
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag scroll">data-speed parallax</span>
+                <span class="ws-anim-tag counter">Counter with scrub</span>
+                <span class="ws-anim-tag flip">Flip hover expand</span>
+            </div>
+        </div>
+
+        <!-- TECNOLOGIAS -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">STAGGER GRID</div>
+            <div class="ws-label">06 — Stack Tecnológico</div>
+            <div class="ws-desc">
+                Grid de ícones/logos das tecnologias utilizadas pela Lifters. Cada ícone aparece com stagger e scale 0→1. Hover gira o ícone 360° e mostra o nome. Pode incluir: React, Node.js, Python, AWS, Docker, Kubernetes, etc. Background com grid pattern sutil.
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag scroll">ScrollTrigger stagger</span>
+                <span class="ws-anim-tag clip">scale 0→1 reveal</span>
+            </div>
+        </div>
+
+        <!-- MODELO DE TRABALHO -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">TIMELINE DRAW</div>
+            <div class="ws-label">07 — Como Trabalhamos (Processo)</div>
+            <div class="ws-desc">
+                Timeline vertical com SVG line draw conforme scroll. Cada etapa (Discovery → Design → Develop → Deploy → Operate) aparece com SplitText e ícone SVG draw. A linha conectora se desenha em tempo real com stroke-dasharray/offset.
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag scroll">ScrollTrigger scrub</span>
+                <span class="ws-anim-tag clip">SVG stroke draw</span>
+                <span class="ws-anim-tag split">SplitText → words</span>
+            </div>
+        </div>
+
+        <!-- CTA / CONTATO -->
+        <div class="wireframe-section">
+            <div class="ws-tag gsap">FINAL CTA</div>
+            <div class="ws-label">08 — Contato & CTA Final</div>
+            <div class="ws-desc">
+                Seção fullscreen com frase de impacto em SplitText chars (typewriter effect). Botão de CTA com hover magnético (Observer). Background com gradiente radial pulsante. Links para LinkedIn, Instagram e formulário de contato. Texto: "Vamos construir a próxima grande plataforma?" ou similar.
+            </div>
+            <div class="ws-anim">
+                <span class="ws-anim-tag split">SplitText typewriter</span>
+                <span class="ws-anim-tag scroll">Observer (mouse follow)</span>
+                <span class="ws-anim-tag clip">Gradient pulse</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 9: CATÁLOGO DE ANIMAÇÕES -->
+    <div class="section" id="animations">
+        <div class="section-label green">09 — Animações</div>
+        <div class="section-title">Catálogo de Animações GSAP</div>
+
+        <p style="color:var(--text-secondary); font-size:14px; margin-bottom:24px;">
+            Todas as animações usam GSAP v3 com plugins gratuitos (desde abril 2025, todos os plugins GSAP são 100% grátis).
+        </p>
+
+        <div class="card">
+            <h3>1. ScrollSmoother + Background Fixo</h3>
+            <p style="margin-bottom:12px">Scroll suave com efeito de conteúdo fluindo sobre background travado.</p>
+            <div class="code-block">
+                <span class="code-label">JS</span>
+<span class="comment">// Estrutura HTML obrigatória</span>
+<span class="comment">// &lt;div id="smooth-wrapper"&gt;&lt;div id="smooth-content"&gt;...&lt;/div&gt;&lt;/div&gt;</span>
+
+gsap.<span class="func">registerPlugin</span>(ScrollTrigger, ScrollSmoother);
+
+<span class="keyword">const</span> smoother = ScrollSmoother.<span class="func">create</span>({
+  wrapper: <span class="string">'#smooth-wrapper'</span>,
+  content: <span class="string">'#smooth-content'</span>,
+  smooth: <span class="number">1.5</span>,
+  effects: <span class="keyword">true</span>
+});
+
+<span class="comment">// Background fixo via CSS</span>
+<span class="comment">// .hero-bg { position: fixed; inset: 0; z-index: -1; }</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>2. SplitText — Reveal Caractere por Caractere</h3>
+            <p style="margin-bottom:12px">Texto aparece letra por letra com stagger. Ideal para hero e títulos.</p>
+            <div class="code-block">
+                <span class="code-label">JS</span>
+gsap.<span class="func">registerPlugin</span>(SplitText);
+
+<span class="keyword">const</span> split = <span class="keyword">new</span> SplitText(<span class="string">'.hero-title'</span>, {
+  type: <span class="string">'chars, words'</span>
+});
+
+gsap.<span class="func">from</span>(split.chars, {
+  opacity: <span class="number">0</span>,
+  y: <span class="number">40</span>,
+  rotateX: <span class="number">-90</span>,
+  stagger: <span class="number">0.03</span>,
+  duration: <span class="number">0.8</span>,
+  ease: <span class="string">'back.out(1.7)'</span>
+});
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>3. Clip-Path Reveal</h3>
+            <p style="margin-bottom:12px">Conteúdo se revela com mask animada — efeito de "cortina" abrindo.</p>
+            <div class="code-block">
+                <span class="code-label">JS</span>
+gsap.<span class="func">from</span>(<span class="string">'.reveal-block'</span>, {
+  clipPath: <span class="string">'inset(0 100% 0 0)'</span>,
+  duration: <span class="number">1.2</span>,
+  ease: <span class="string">'power4.out'</span>,
+  scrollTrigger: {
+    trigger: <span class="string">'.reveal-block'</span>,
+    start: <span class="string">'top 80%'</span>
+  }
+});
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>4. Scale + Blur Reveal</h3>
+            <p style="margin-bottom:12px">Elemento surge do blur com scale crescente — profundidade e foco.</p>
+            <div class="code-block">
+                <span class="code-label">JS</span>
+gsap.<span class="func">from</span>(<span class="string">'.card'</span>, {
+  scale: <span class="number">0.85</span>,
+  filter: <span class="string">'blur(12px)'</span>,
+  opacity: <span class="number">0</span>,
+  duration: <span class="number">1</span>,
+  ease: <span class="string">'power3.out'</span>,
+  stagger: <span class="number">0.15</span>,
+  scrollTrigger: {
+    trigger: <span class="string">'.cards-container'</span>,
+    start: <span class="string">'top 75%'</span>
+  }
+});
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>5. Counter Animado com Scrub</h3>
+            <p style="margin-bottom:12px">Números sobem de 0 ao valor final sincronizados com o scroll.</p>
+            <div class="code-block">
+                <span class="code-label">JS</span>
+<span class="keyword">const</span> counter = { val: <span class="number">0</span> };
+
+gsap.<span class="func">to</span>(counter, {
+  val: <span class="number">10000</span>,
+  duration: <span class="number">2</span>,
+  snap: { val: <span class="number">1</span> },
+  scrollTrigger: {
+    trigger: <span class="string">'.counter-section'</span>,
+    start: <span class="string">'top center'</span>,
+    end: <span class="string">'bottom center'</span>,
+    scrub: <span class="number">1</span>
+  },
+  onUpdate: () => {
+    el.textContent = counter.val.<span class="func">toLocaleString</span>(<span class="string">'pt-BR'</span>);
+  }
+});
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>6. SVG Line Draw (Timeline)</h3>
+            <p style="margin-bottom:12px">Linha SVG se desenha conforme scroll — perfeito para timeline de processo.</p>
+            <div class="code-block">
+                <span class="code-label">JS</span>
+<span class="keyword">const</span> path = document.<span class="func">querySelector</span>(<span class="string">'.timeline-line'</span>);
+<span class="keyword">const</span> length = path.<span class="func">getTotalLength</span>();
+
+gsap.<span class="func">set</span>(path, {
+  strokeDasharray: length,
+  strokeDashoffset: length
+});
+
+gsap.<span class="func">to</span>(path, {
+  strokeDashoffset: <span class="number">0</span>,
+  ease: <span class="string">'none'</span>,
+  scrollTrigger: {
+    trigger: <span class="string">'.timeline-section'</span>,
+    start: <span class="string">'top center'</span>,
+    end: <span class="string">'bottom center'</span>,
+    scrub: <span class="keyword">true</span>
+  }
+});
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>7. Horizontal Slide-in com Stagger</h3>
+            <p style="margin-bottom:12px">Cards entram da direita um por um conforme o scroll avança.</p>
+            <div class="code-block">
+                <span class="code-label">JS</span>
+gsap.<span class="func">from</span>(<span class="string">'.service-card'</span>, {
+  xPercent: <span class="number">100</span>,
+  opacity: <span class="number">0</span>,
+  duration: <span class="number">0.8</span>,
+  stagger: <span class="number">0.2</span>,
+  ease: <span class="string">'power3.out'</span>,
+  scrollTrigger: {
+    trigger: <span class="string">'.services-section'</span>,
+    start: <span class="string">'top 70%'</span>
+  }
+});
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>8. Parallax com data-speed</h3>
+            <p style="margin-bottom:12px">Elementos com velocidades diferentes criam profundidade 3D durante o scroll.</p>
+            <div class="code-block">
+                <span class="code-label">HTML + JS</span>
+<span class="comment">&lt;!-- No HTML, adicionar atributo data-speed --&gt;</span>
+<span class="comment">&lt;div data-speed="0.8"&gt;...lento&lt;/div&gt;</span>
+<span class="comment">&lt;div data-speed="1.2"&gt;...rápido&lt;/div&gt;</span>
+
+<span class="comment">// ScrollSmoother detecta automaticamente data-speed</span>
+<span class="comment">// quando effects: true está ativo.</span>
+<span class="comment">// Valores &lt;1 = mais lento, &gt;1 = mais rápido</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 10: ESPECIFICAÇÃO TÉCNICA -->
+    <div class="section" id="tech-spec">
+        <div class="section-label cyan">10 — Técnico</div>
+        <div class="section-title">Especificação Técnica</div>
+
+        <div class="card">
+            <h3>📦 CDN — Scripts GSAP (todos gratuitos)</h3>
+            <div class="code-block">
+                <span class="code-label">HTML</span>
+<span class="comment">&lt;!-- GSAP Core + Plugins (100% free desde abril 2025) --&gt;</span>
+&lt;script src=<span class="string">"https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="string">"https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="string">"https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="string">"https://cdn.jsdelivr.net/npm/gsap@3/dist/SplitText.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="string">"https://cdn.jsdelivr.net/npm/gsap@3/dist/Flip.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="string">"https://cdn.jsdelivr.net/npm/gsap@3/dist/Observer.min.js"</span>&gt;&lt;/script&gt;
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🏗️ Estrutura HTML Base</h3>
+            <div class="code-block">
+                <span class="code-label">HTML</span>
+&lt;body&gt;
+  <span class="comment">&lt;!-- BG fixo --&gt;</span>
+  &lt;div class=<span class="string">"hero-bg"</span>&gt;
+    <span class="comment">&lt;!-- Grid pattern + particles --&gt;</span>
+  &lt;/div&gt;
+
+  <span class="comment">&lt;!-- ScrollSmoother wrapper obrigatório --&gt;</span>
+  &lt;div id=<span class="string">"smooth-wrapper"</span>&gt;
+    &lt;div id=<span class="string">"smooth-content"</span>&gt;
+      &lt;section class=<span class="string">"hero"</span>&gt;...&lt;/section&gt;
+      &lt;section class=<span class="string">"about"</span>&gt;...&lt;/section&gt;
+      &lt;section class=<span class="string">"services"</span>&gt;...&lt;/section&gt;
+      &lt;section class=<span class="string">"verticals"</span>&gt;...&lt;/section&gt;
+      &lt;section class=<span class="string">"cases"</span>&gt;...&lt;/section&gt;
+      &lt;section class=<span class="string">"stack"</span>&gt;...&lt;/section&gt;
+      &lt;section class=<span class="string">"process"</span>&gt;...&lt;/section&gt;
+      &lt;section class=<span class="string">"contact"</span>&gt;...&lt;/section&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>⚡ Performance</h3>
+                <ul>
+                    <li><code>will-change: transform</code> nos elementos animados</li>
+                    <li>Kill ScrollTriggers fora da viewport</li>
+                    <li>Lazy-load imagens com <code>loading="lazy"</code></li>
+                    <li>Debounce no resize para recalcular triggers</li>
+                    <li>Preferir <code>transform</code> e <code>opacity</code> (GPU)</li>
+                    <li>matchMedia para desativar animações pesadas no mobile</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>📱 Responsividade</h3>
+                <ul>
+                    <li>ScrollSmoother.matchMedia para breakpoints</li>
+                    <li>No mobile: desativar pin e parallax pesados</li>
+                    <li>SplitText: usar words em vez de chars no mobile</li>
+                    <li>Cards em coluna única abaixo de 768px</li>
+                    <li>Animações mais curtas e simples no mobile</li>
+                    <li>Touch-friendly: sem hover complexo</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 11: PROMPT -->
+    <div class="section" id="prompt">
+        <div class="section-label orange">11 — Prompt</div>
+        <div class="section-title">Prompt Pronto para Claude Design</div>
+
+        <p style="color:var(--text-secondary); font-size:14px; margin-bottom:20px;">
+            Copie o prompt abaixo e cole diretamente no Claude Design para gerar o site.
+        </p>
+
+        <div class="code-block" style="white-space: pre-wrap; font-size: 12px; line-height: 1.7; max-height: 600px; overflow-y: auto;">
+<span class="code-label">PROMPT</span>
+Crie uma single-page profissional para a <span class="keyword">Lifters Tecnologia</span> — uma Software House de plataformas digitais em João Pessoa/PB. O site deve ser comercial, interativo e premium.
+
+<span class="comment">═══ IDENTIDADE ═══</span>
+• Empresa: Lifters Tecnologia
+• Tipo: Software House de plataformas digitais
+• Sede: João Pessoa, PB
+• Site: lifters.tech
+• Instagram: @lifters.tech | LinkedIn: lifters-tech
+
+<span class="comment">═══ POSICIONAMENTO ═══</span>
+"Especializada no desenvolvimento de plataformas robustas, escaláveis e seguras — da concepção da solução à operação em produção, atendendo cenários críticos de negócio."
+
+<span class="comment">═══ SERVIÇOS (3 pilares) ═══</span>
+1. <span class="string">Desenvolvimento & Modernização</span> — Apps, plataformas e sistemas com squads multidisciplinares sob demanda
+2. <span class="string">Pesquisa, Design & Co-criação</span> — Soluções digitais únicas, eficientes e escaláveis com UX research
+3. <span class="string">Arquitetura de Soluções & Cloud</span> — Escalar produtos com segurança, microsserviços, DevOps
+
+<span class="comment">═══ VERTICAIS ═══</span>
+• <span class="string">Processamento Bancário</span> — Alto volume de transações, integração simplificada, criptografia, proteção contra fraudes, PIX
+• <span class="string">Reconhecimento Facial</span> — Autenticação biométrica, verificação de identidade, compliance LGPD
+• <span class="string">iGaming</span> — Plataformas de apostas escaláveis, UX que engaja e converte, conformidade regulatória
+
+<span class="comment">═══ SEÇÕES DO SITE (nesta ordem) ═══</span>
+1. HERO — Fullscreen com background fixo (position:fixed), título "Lifters" com SplitText char reveal, subtítulo com clip-path, CTA "Fale com a gente"
+2. SOBRE — Texto de posicionamento com SplitText word fade + card com dados, scale+blur reveal
+3. SERVIÇOS — 3 cards que entram da direita com horizontal slide-in + stagger
+4. VERTICAIS — Seção pinada com Flip transitions entre Banking/Facial/iGaming, contadores animados
+5. CASES/NÚMEROS — Grid com parallax data-speed + contadores (projetos entregues, squads ativos, uptime %)
+6. STACK TECNOLÓGICO — Grid de ícones tech com stagger scale reveal
+7. PROCESSO — Timeline "Discovery → Design → Develop → Deploy → Operate" com SVG line draw
+8. CONTATO — Fullscreen CTA com typewriter SplitText, botão magnético, links sociais
+
+<span class="comment">═══ OBRIGATÓRIO: GSAP v3 ═══</span>
+TODOS os plugins GSAP são 100% GRATUITOS desde abril 2025.
+Use TODOS via CDN:
+- https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js
+- https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js
+- https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollSmoother.min.js
+- https://cdn.jsdelivr.net/npm/gsap@3/dist/SplitText.min.js
+- https://cdn.jsdelivr.net/npm/gsap@3/dist/Flip.min.js
+- https://cdn.jsdelivr.net/npm/gsap@3/dist/Observer.min.js
+
+<span class="comment">═══ SCROLL OBRIGATÓRIO ═══</span>
+Estrutura: div#smooth-wrapper > div#smooth-content > sections
+ScrollSmoother.create({ wrapper:'#smooth-wrapper', content:'#smooth-content', smooth:1.5, effects:true })
+O background do hero DEVE ser position:fixed para que o conteúdo deslize por cima.
+NÃO use scroll-behavior:smooth nativo — use ScrollSmoother.
+
+<span class="comment">═══ PALETA ═══</span>
+Dark tech: BG #050508, Cards #0C0C10, Accent Indigo #6366F1, Green #10B981, Cyan #06B6D4, Orange #F59E0B, Text #F0F0F5
+Tipografia: Inter para texto, JetBrains Mono para tags/código.
+
+<span class="comment">═══ ANIMAÇÕES POR SEÇÃO ═══</span>
+Hero: SplitText chars + clip-path reveal + CTA glow
+Sobre: SplitText words + scale+blur reveal (0.85→1, blur 12→0)
+Serviços: xPercent:100 slide-in + stagger 0.2
+Verticais: pin+snap + Flip + counter snap
+Cases: parallax data-speed + counter with scrub
+Stack: stagger scale 0→1 grid
+Processo: SVG strokeDasharray/offset scrub draw
+Contato: SplitText typewriter + Observer mouse-follow + gradient pulse
+
+<span class="comment">═══ PERFORMANCE ═══</span>
+will-change:transform em animados, lazy-load imagens, matchMedia para mobile (desativar pin/parallax pesados), preferir transform+opacity.
+
+Gere o HTML completo, CSS e JS em um único arquivo. Tudo funcional e interativo.
+        </div>
+    </div>
+
+    <!-- SECTION 12: CHECKLIST -->
+    <div class="section" id="checklist">
+        <div class="section-label purple">12 — Entrega</div>
+        <div class="section-title">Checklist de Entrega</div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>📋 Conteúdo</h3>
+                <ul class="checklist">
+                    <li>Texto de posicionamento aprovado</li>
+                    <li>3 serviços com descrições completas</li>
+                    <li>3 verticais com features detalhadas</li>
+                    <li>Métricas/números reais (ou placeholders validados)</li>
+                    <li>Stack tecnológico confirmado (logos/ícones)</li>
+                    <li>Etapas do processo validadas</li>
+                    <li>Copy do CTA final definido</li>
+                    <li>Dados de contato atualizados</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>🛠️ Técnico</h3>
+                <ul class="checklist">
+                    <li>ScrollSmoother com background fixo</li>
+                    <li>SplitText em hero e títulos</li>
+                    <li>Clip-path reveal em pelo menos 2 seções</li>
+                    <li>Contadores animados com snap</li>
+                    <li>Flip transitions nas verticais</li>
+                    <li>SVG draw na timeline de processo</li>
+                    <li>Parallax data-speed em cases</li>
+                    <li>Responsivo com matchMedia</li>
+                    <li>Performance: will-change, lazy-load</li>
+                    <li>Testado em Chrome, Safari, Firefox</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="note" style="margin-top:24px">
+            <strong>⚠️ Ação necessária do Thiago:</strong><br>
+            1. Validar se os 3 serviços e 3 verticais estão corretos e completos<br>
+            2. Fornecer métricas reais (projetos entregues, uptime, squads ativos, etc.)<br>
+            3. Listar o stack tecnológico oficial da Lifters<br>
+            4. Confirmar as etapas do processo de trabalho<br>
+            5. Definir se deseja cases de clientes visíveis no site<br>
+            6. Confirmar a paleta (Dark Tech com Indigo) ou ajustar<br>
+            7. Fornecer logo oficial em SVG
+        </div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center; padding:48px 0 64px; border-top:1px solid var(--border);">
+    <div style="font-size:12px; color:var(--text-muted); letter-spacing:1px;">
+        BRIEFING LIFTERS TECNOLOGIA — MAIO 2026<br>
+        <span style="color:var(--text-secondary);">Documento preparado para redesign de lifters.tech</span>
+    </div>
+</div>
+
+</body>
+</html>
